@@ -157,10 +157,13 @@ FixMyCity/
 ```bash
 cd server
 npm install
-cp .env.example .env
-# edit .env → set GEMINI_API_KEY, JWT_SECRET
+# Windows:  copy .env.example .env
+# macOS:    cp .env.example .env
+# edit .env → set GEMINI_API_KEY (required for AI gates), JWT_SECRET
 npm run dev          # http://localhost:5000
 ```
+
+> MongoDB is optional — if local Mongo isn’t running, the server auto-starts an **in-memory DB** (data resets on restart → re-run seed).
 
 ### 2️⃣ Frontend
 
