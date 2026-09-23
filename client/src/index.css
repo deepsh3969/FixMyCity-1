@@ -1,0 +1,96 @@
+@import './styles/design-system.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.leaflet-container {
+  background: var(--bg-elevated);
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-muted);
+}
+
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--bg-card-hover) !important;
+}
+
+.leaflet-control-layers {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border-subtle) !important;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: var(--text-muted) !important;
+  font-size: 11px !important;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+.recharts-default-tooltip {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.recharts-legend-wrapper {
+  color: var(--text-secondary) !important;
+}
+
+@media (max-width: 1024px) {
+  .lg\:static { position: static !important; }
+  .lg\:ml-0 { margin-left: 0 !important; }
+  .lg\:ml-8 { margin-left: 2rem !important; }
+  .lg\:ml-0 { margin-left: 0 !important; }
+  .lg\:flex { display: flex !important; }
+  .lg\:flex-1 { flex: 1 1 0% !important; }
+  .lg\:p-6 { padding: 1.5rem !important; }
+  .lg\:p-8 { padding: 2rem !important; }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 1rem !important; }
+  .lg\:p-6 { padding: 1rem !important; }
+  .lg\:p-8 { padding: 1.5rem !important; }
+}
+
+@media (max-width: 640px) {
+  :root { --space-4: 12px; --space-6: 16px; }
+}
