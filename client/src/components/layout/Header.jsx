@@ -48,7 +48,7 @@ function Header({ title, breadcrumbs, actions }) {
   const settingsPath = user?.role === 'municipal' ? '/municipal/settings' : null;
 
   return (
-    <header className="h-16 bg-[var(--panel)] backdrop-blur-xl border-b border-[var(--border-subtle)] flex items-center justify-between px-4 lg:px-8">
+    <header className="h-16 bg-[var(--panel)] backdrop-blur-xl border-b border-[var(--border-subtle)] flex items-center justify-between px-4 lg:px-8 z-30">
       <div className="lg:hidden flex items-center gap-2">
         <button
           onClick={() => window.dispatchEvent(new CustomEvent('toggle-sidebar'))}
