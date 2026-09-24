@@ -9,19 +9,19 @@ import { BarChart3, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-reac
 /**
  * Analytics with a real interactive bar chart (recharts).
  */
-export default function AnalyticsPanel({ stats, complaints = [] }) {
+export default function AnalyticsPanel({ stats, complaints = [], compact = false }) {
   const [mode, setMode] = useState('status')
 
   const TONE_HEX = {
-    REPORTED: '#0ea5e9',
-    ASSIGNED: '#8b5cf6',
-    UNDER_REPAIR: '#f59e0b',
-    VERIFICATION: '#06b6d4',
-    VERIFIED: '#10b981',
-    MANUAL_REVIEW: '#f59e0b',
-    REJECTED: '#ef4444',
-    RESOLVED: '#64748b',
-    low: '#10b981',
+    REPORTED: '#22D3EE',
+    ASSIGNED: '#8B5CF6',
+    UNDER_REPAIR: '#3B82F6',
+    VERIFICATION: '#06B6D4',
+    VERIFIED: '#10B981',
+    MANUAL_REVIEW: '#F59E0B',
+    REJECTED: '#EF4444',
+    RESOLVED: '#34D399',
+    low: '#10B981',
     medium: '#06b6d4',
     high: '#f59e0b',
     critical: '#ef4444'
@@ -57,52 +57,57 @@ export default function AnalyticsPanel({ stats, complaints = [] }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
-              <CheckCircle className="w-4 h-4 text-[var(--accent-green)]" /> Verified rate
-            </div>
-            <p className="text-3xl font-bold text-[var(--accent-green)]">{verification.verifiedRate || 0}%</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">{verification.verified || 0} of {verification.total || 0} verifications</p>
-          </CardContent>
-        </Card>
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
-              <AlertCircle className="w-4 h-4 text-[var(--accent-amber)]" /> Manual review
-            </div>
-            <p className="text-3xl font-bold text-[var(--accent-amber)]">{verification.manualReview || 0}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">Needs officer decision</p>
-          </CardContent>
-        </Card>
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
-              <XCircle className="w-4 h-4 text-[var(--accent-red)]" /> Rejected (fraud)
-            </div>
-            <p className="text-3xl font-bold text-[var(--accent-red)]">{verification.rejected || 0}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">Anti-fraud detections</p>
-          </CardContent>
-        </Card>
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
-              <Clock className="w-4 h-4 text-[var(--accent-cyan)]" /> Avg resolution
-            </div>
-            <p className="text-3xl font-bold text-[var(--accent-cyan)]">{avgH != null ? `${avgH}h` : '—'}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">Report → resolved</p>
-          </CardContent>
-        </Card>
-      </div>
+      {!compact && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card hover className="border-[var(--border-subtle)]">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
+                <CheckCircle className="w-4 h-4 text-[var(--accent-green)]" /> Verified rate
+              </div>
+              <p className="text-3xl font-bold mono-num text-[var(--accent-green)]">{verification.verifiedRate || 0}%</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">{verification.verified || 0} of {verification.total || 0} verifications</p>
+            </CardContent>
+          </Card>
+          <Card hover className="border-[var(--border-subtle)]">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
+                <AlertCircle className="w-4 h-4 text-[var(--accent-amber)]" /> Manual review
+              </div>
+              <p className="text-3xl font-bold mono-num text-[var(--accent-amber)]">{verification.manualReview || 0}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Needs officer decision</p>
+            </CardContent>
+          </Card>
+          <Card hover className="border-[var(--border-subtle)]">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
+                <XCircle className="w-4 h-4 text-[var(--accent-red)]" /> Rejected (fraud)
+              </div>
+              <p className="text-3xl font-bold mono-num text-[var(--accent-red)]">{verification.rejected || 0}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Anti-fraud detections</p>
+            </CardContent>
+          </Card>
+          <Card hover className="border-[var(--border-subtle)]">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
+                <Clock className="w-4 h-4 text-[var(--accent-cyan)]" /> Avg resolution
+              </div>
+              <p className="text-3xl font-bold mono-num text-[var(--accent-cyan)]">{avgH != null ? `${avgH}h` : '—'}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Report → resolved</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <Card className="border-[var(--border-subtle)]">
         <CardContent className="p-4 space-y-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h3 className="font-semibold flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-[var(--accent-cyan)]" />
-              Distribution
-            </h3>
+            <div>
+              <h3 className="panel-title flex items-center gap-2 text-[var(--text-primary)]">
+                <BarChart3 className="w-4 h-4 text-[var(--accent-cyan)]" />
+                Status Distribution
+              </h3>
+              <p className="tech-label text-[var(--text-muted)] mt-1">Reported → Resolved pipeline</p>
+            </div>
             <div className="flex gap-2">
               <Button size="sm" variant={mode === 'status' ? 'primary' : 'outline'} onClick={() => setMode('status')}>
                 By status
@@ -121,36 +126,38 @@ export default function AnalyticsPanel({ stats, complaints = [] }) {
                 margin={{ top: 4, right: 40, left: 4, bottom: 4 }}
                 barCategoryGap="28%"
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.14)" horizontal={false} />
                 <XAxis
                   type="number"
                   allowDecimals={false}
-                  tick={{ fontSize: 11, fill: '#64748b' }}
-                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fontSize: 11, fill: '#94A3B8' }}
+                  axisLine={{ stroke: 'rgba(148,163,184,0.25)' }}
                   tickLine={false}
                   label={{
                     value: mode === 'status' ? 'Complaints' : 'Count',
                     position: 'insideBottom',
                     offset: -2,
                     fontSize: 10,
-                    fill: '#94a3b8'
+                    fill: '#64748B'
                   }}
                 />
                 <YAxis
                   type="category"
                   dataKey="label"
                   width={112}
-                  tick={{ fontSize: 11, fill: '#334155', fontWeight: 600 }}
-                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fontSize: 11, fill: '#CBD5E1', fontWeight: 600 }}
+                  axisLine={{ stroke: 'rgba(148,163,184,0.25)' }}
                   tickLine={false}
                 />
                 <Tooltip
-                  cursor={{ fill: 'rgba(15, 23, 42, 0.04)' }}
+                  cursor={{ fill: 'rgba(34, 211, 238, 0.06)' }}
                   contentStyle={{
+                    background: 'rgba(6, 17, 31, 0.96)',
                     borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid rgba(34, 211, 238, 0.3)',
                     fontSize: '12px',
-                    boxShadow: '0 4px 12px rgba(15,23,42,0.08)'
+                    color: '#E6EDF3',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)'
                   }}
                   formatter={(value) => [value, mode === 'status' ? 'Complaints' : 'Count']}
                   labelFormatter={(label) => `${label}`}
@@ -162,7 +169,7 @@ export default function AnalyticsPanel({ stats, complaints = [] }) {
                   <LabelList
                     dataKey="value"
                     position="right"
-                    style={{ fontSize: 11, fontWeight: 700, fill: '#334155' }}
+                    style={{ fontSize: 11, fontWeight: 700, fill: '#E6EDF3' }}
                   />
                 </Bar>
               </BarChart>

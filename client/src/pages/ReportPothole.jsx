@@ -270,25 +270,6 @@ export default function ReportPothole() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between relative">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 z-0" />
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="relative z-10 flex flex-col items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
-                step >= s ? 'bg-gradient-to-br from-cyan-500 to-purple-600 text-white' : 'bg-slate-100 border border-slate-300 text-slate-500'
-              }`}>
-                {step > s ? <Check className="w-5 h-5" /> : s}
-              </div>
-              <span className={`mt-2 text-xs font-medium ${step >= s ? 'text-slate-900' : 'text-slate-500'}`}>
-                {['Details', 'Location', 'Confirm'][s - 1]}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {error && (
         <Alert variant="error" className="mb-6 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
@@ -296,112 +277,90 @@ export default function ReportPothole() {
         </Alert>
       )}
 
-      {/* Step 1: Details */}
-      {step === 1 && (
-        <Card>
-          <CardContent className="p-6 space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Complaint Details</h2>
-              <p className="text-[var(--text-muted)]">Describe the pothole you want to report</p>
-            </div>
+      {/* Report intake panel */}
+      <div className="glass p-6 sm:p-8">
+        <div className="flex items-center justify-between gap-3 mb-6 pb-5 border-b border-[var(--border-subtle)]">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)] shadow-[0_0_12px_2px_rgba(34,211,238,0.75)] animate-pulse" />
+            <p className="panel-title">REPORT POTHOLE</p>
+          </div>
+          <span className="tech-label">SMART CITY INTAKE</span>
+        </div>
 
-            <Input
-              label="Title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="e.g., Large pothole on Eastern Express Highway"
-              error={error === 'Title is required' ? error : undefined}
+        {/* Section 1: Upload */}
+        <section className="pb-6">
+          <p className="panel-title mb-3">UPLOAD ROAD IMAGE</p>
+          <div className="relative">
+            <input
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              onChange={handleImageChange}
+              className="hidden"
+              id="image-upload"
+              disabled={loading}
             />
-
-            <Textarea
-              label="Description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="e.g., Deep pothole near Majiwada Junction, Ghodbunder Road. Getting worse after rain."
-              rows={4}
-              error={error === 'Description is required' ? error : undefined}
-            />
-
-            <Select
-              label="Severity"
-              value={formData.severity}
-              onChange={(e) => setFormData(prev => ({ ...prev, severity: e.target.value }))}
-              options={severityOptions}
-            />
-
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Photo Evidence</label>
-              <div className="relative">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  onChange={handleImageChange}
-                  className="hidden"
-                  id="image-upload"
-                  disabled={loading}
-                />
-                <label 
-                  htmlFor="image-upload"
-                  className={`cursor-pointer block p-6 border-2 border-dashed rounded-xl transition-all ${
-                    imagePreview ? 'border-[var(--accent-cyan)]/50 bg-[var(--accent-cyan-dim)]' : 'border-[var(--border-default)] hover:border-[var(--accent-cyan)]/50'
-                  }`}
-                >
-                  {imagePreview ? (
-                    <div className="relative">
-                      <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
-                      <button
-                        type="button"
-                        onClick={removeImage}
-                        className="absolute top-2 right-2 p-1.5 bg-[var(--accent-red)]/80 text-white rounded-full hover:bg-[var(--accent-red)] transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-3 text-center">
-                      <Camera className="w-10 h-10 text-[var(--text-muted)]" />
-                      <div>
-                        <p className="font-medium text-[var(--text-primary)]">Click or drag to upload photo</p>
-                        <p className="text-sm text-[var(--text-muted)]">JPEG, PNG, WebP up to 10MB</p>
-                      </div>
-                    </div>
-                  )}
-                </label>
-                <div className="mt-3">
-                  <AIImageAnalysis
-                    state={analysisState}
-                    result={analysis}
-                    error={analysisError}
-                    previewUrl={imagePreview}
-                    onRetry={() => imageFile && validateImageWithAI(imageFile)}
-                  />
+            <label 
+              htmlFor="image-upload"
+              className={`cursor-pointer block p-6 border-2 border-dashed rounded-xl transition-all ${
+                imagePreview ? 'border-[var(--accent-cyan)] bg-[var(--accent-cyan-dim)]' : 'border-[var(--border-default)] hover:border-[var(--accent-cyan)] hover:bg-[var(--accent-cyan-weak)]'
+              }`}
+            >
+              {imagePreview ? (
+                <div className="relative">
+                  <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 p-1.5 bg-[var(--accent-red)] text-white rounded-full hover:brightness-125 transition-all"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-              </div>
-              {imageError && <p className="mt-2 text-sm text-[var(--accent-red)]">{imageError}</p>}
-              {error === 'Photo is required' && <p className="mt-2 text-sm text-[var(--accent-red)]">{error}</p>}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              ) : (
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <Camera className="w-10 h-10 text-[var(--text-muted)]" />
+                  <div>
+                    <p className="font-medium text-[var(--text-primary)]">Click or drag to upload photo</p>
+                    <p className="text-sm text-[var(--text-muted)]">JPEG, PNG, WebP up to 10MB</p>
+                  </div>
+                </div>
+              )}
+            </label>
+          </div>
+          {imageError && <p className="mt-2 text-sm text-[var(--accent-red)]">{imageError}</p>}
+          {error === 'Photo is required' && <p className="mt-2 text-sm text-[var(--accent-red)]">{error}</p>}
+        </section>
 
-      {/* Step 2: Location */}
-      {step === 2 && (
-        <Card>
-          <CardContent className="p-6 space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Location</h2>
-              <p className="text-[var(--text-muted)]">Confirm or adjust the pothole location</p>
+        {/* Section 2: AI analysis */}
+        <section className="py-6 border-t border-[var(--border-subtle)]">
+          <p className="panel-title mb-3">AI ANALYSIS</p>
+          {analysisState === 'idle' ? (
+            <div className="flex items-center gap-2.5 px-4 py-3 rounded-lg border border-dashed border-[var(--border-subtle)] bg-[var(--bg-card-hover)]">
+              <Camera className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
+              <p className="text-sm text-[var(--text-muted)]">Upload a road image to start AI validation.</p>
             </div>
+          ) : (
+            <AIImageAnalysis
+              state={analysisState}
+              result={analysis}
+              error={analysisError}
+              previewUrl={imagePreview}
+              onRetry={() => imageFile && validateImageWithAI(imageFile)}
+            />
+          )}
+        </section>
 
-            <div>
-              <Input
-                label="Address"
-                value={formData.address}
-                onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                placeholder="e.g., Ghodbunder Road, Near Majiwada Junction, Thane"
-                autoComplete="street-address"
-              />
-            </div>
+        {/* Section 3: Location */}
+        <section className="py-6 border-t border-[var(--border-subtle)]">
+          <p className="panel-title mb-3">LOCATION</p>
+          <div className="space-y-4">
+            <Input
+              label="Address"
+              value={formData.address}
+              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+              placeholder="e.g., Ghodbunder Road, Near Majiwada Junction, Thane"
+              autoComplete="street-address"
+            />
 
             <LocationMap
               latitude={formData.latitude}
@@ -448,69 +407,51 @@ export default function ReportPothole() {
             </Button>
 
             {error === 'Location is required' && <p className="text-sm text-[var(--accent-red)]">{error}</p>}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </section>
 
-      {/* Step 3: Confirm */}
-      {step === 3 && (
-        <Card>
-          <CardContent className="p-6 space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Review & Submit</h2>
-              <p className="text-[var(--text-muted)]">Please review your report before submitting</p>
-            </div>
+        {/* Section 4: Description */}
+        <section className="py-6 border-t border-[var(--border-subtle)]">
+          <p className="panel-title mb-3">DESCRIPTION</p>
+          <div className="space-y-4">
+            <Input
+              label="Title"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              placeholder="e.g., Large pothole on Eastern Express Highway"
+              error={error === 'Title is required' ? error : undefined}
+            />
 
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-[var(--bg-card-hover)]">
-                  {imagePreview && <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-[var(--text-primary)]">{formData.title}</h3>
-                  <p className="text-sm text-[var(--text-muted)] truncate">{formData.description}</p>
-                  <div className="flex items-center gap-3 mt-2 flex-wrap">
-                    <Badge variant="default" className="capitalize bg-[var(--bg-card-hover)] text-[var(--text-secondary)]">
-                      {formData.severity}
-                    </Badge>
-                    <span className="text-sm text-[var(--text-muted)]">📍 {formData.address}</span>
-                    <CoordsBadge latitude={formData.latitude} longitude={formData.longitude} />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Textarea
+              label="Description"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="e.g., Deep pothole near Majiwada Junction, Ghodbunder Road. Getting worse after rain."
+              rows={4}
+              error={error === 'Description is required' ? error : undefined}
+            />
+          </div>
+        </section>
 
-            <div className="pt-4 border-t border-[var(--border-subtle)] flex gap-4">
-              <Button variant="outline" onClick={handleBack} className="flex-1">
-                Back
-              </Button>
-              <Button onClick={handleSubmit} loading={loading} className="flex-1" size="lg">
-                Submit Report
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+        {/* Section 5: Severity */}
+        <section className="py-6 border-t border-[var(--border-subtle)]">
+          <p className="panel-title mb-3">SEVERITY</p>
+          <Select
+            label="Severity"
+            value={formData.severity}
+            onChange={(e) => setFormData(prev => ({ ...prev, severity: e.target.value }))}
+            options={severityOptions}
+          />
+        </section>
 
-      {/* Bottom navigation for steps 1-2 */}
-      {(step === 1 || step === 2) && (
-        <div className="mt-6 flex gap-4 justify-end">
-          {step > 1 && (
-            <Button variant="outline" onClick={handleBack}>
-              Back
-            </Button>
-          )}
-          <Button
-            onClick={handleNext}
-            loading={loading}
-            size="lg"
-            disabled={step === 1 && !canAdvanceFromStep1}
-          >
-            {step === 1 ? 'Continue' : 'Review & Submit'}
-            <MapPin className="w-4 h-4" />
+        {/* Section 6: Submit */}
+        <section className="pt-6 border-t border-[var(--border-subtle)]">
+          <p className="panel-title mb-3">SUBMIT REPORT</p>
+          <Button onClick={handleSubmit} loading={loading} size="lg" className="w-full btn-glow">
+            SUBMIT REPORT
           </Button>
-        </div>
-      )}
+        </section>
+      </div>
     </div>
   )
 }

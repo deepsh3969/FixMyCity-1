@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <pattern id="city" width="200" height="160" patternUnits="userSpaceOnUse">
+      <rect width="200" height="160" fill="#04101d"/>
+      <rect x="10" y="10" width="74" height="58" rx="3" fill="#061424" stroke="rgba(34,211,238,0.07)"/>
+      <rect x="96" y="10" width="94" height="38" rx="3" fill="#051221" stroke="rgba(34,211,238,0.06)"/>
+      <rect x="96" y="58" width="44" height="42" rx="3" fill="#071728" stroke="rgba(34,211,238,0.07)"/>
+      <rect x="150" y="58" width="40" height="42" rx="3" fill="#051221" stroke="rgba(139,92,246,0.10)"/>
+      <rect x="10" y="80" width="56" height="70" rx="3" fill="#051221" stroke="rgba(34,211,238,0.06)"/>
+      <rect x="78" y="112" width="112" height="38" rx="3" fill="#061424" stroke="rgba(34,211,238,0.07)"/>
+      <rect x="78" y="112" width="34" height="38" rx="3" fill="rgba(34,211,238,0.05)"/>
+      <circle cx="24" cy="24" r="1.6" fill="rgba(34,211,238,0.35)"/>
+      <circle cx="36" cy="24" r="1.6" fill="rgba(34,211,238,0.22)"/>
+      <circle cx="48" cy="24" r="1.6" fill="rgba(245,158,11,0.30)"/>
+      <circle cx="60" cy="24" r="1.6" fill="rgba(34,211,238,0.28)"/>
+      <circle cx="24" cy="40" r="1.6" fill="rgba(34,211,238,0.20)"/>
+      <circle cx="48" cy="40" r="1.6" fill="rgba(34,211,238,0.32)"/>
+      <circle cx="112" cy="22" r="1.6" fill="rgba(34,211,238,0.26)"/>
+      <circle cx="128" cy="22" r="1.6" fill="rgba(34,211,238,0.18)"/>
+      <circle cx="160" cy="22" r="1.6" fill="rgba(139,92,246,0.35)"/>
+      <circle cx="176" cy="22" r="1.6" fill="rgba(34,211,238,0.24)"/>
+      <circle cx="112" cy="74" r="1.6" fill="rgba(34,211,238,0.30)"/>
+      <circle cx="128" cy="74" r="1.6" fill="rgba(245,158,11,0.26)"/>
+      <circle cx="26" cy="96" r="1.6" fill="rgba(34,211,238,0.24)"/>
+      <circle cx="44" cy="112" r="1.6" fill="rgba(34,211,238,0.30)"/>
+      <circle cx="26" cy="128" r="1.6" fill="rgba(34,211,238,0.18)"/>
+      <circle cx="44" cy="144" r="1.6" fill="rgba(34,211,238,0.26)"/>
+      <circle cx="104" cy="126" r="1.6" fill="rgba(34,211,238,0.22)"/>
+      <circle cx="124" cy="126" r="1.6" fill="rgba(34,211,238,0.30)"/>
+      <circle cx="170" cy="134" r="1.6" fill="rgba(245,158,11,0.24)"/>
+      <circle cx="186" cy="134" r="1.6" fill="rgba(34,211,238,0.28)"/>
+    </pattern>
+    <radialGradient id="glowTop" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.14)"/>
+      <stop offset="55%" stop-color="rgba(34,211,238,0.04)"/>
+      <stop offset="100%" stop-color="rgba(3,7,18,0)"/>
+    </radialGradient>
+    <radialGradient id="glowPurple" cx="85%" cy="95%" r="60%">
+      <stop offset="0%" stop-color="rgba(139,92,246,0.16)"/>
+      <stop offset="100%" stop-color="rgba(139,92,246,0)"/>
+    </radialGradient>
+    <radialGradient id="vig" cx="50%" cy="50%" r="75%">
+      <stop offset="55%" stop-color="rgba(3,7,18,0)"/>
+      <stop offset="100%" stop-color="rgba(3,7,18,0.92)"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#030712"/>
+  <rect width="1600" height="1000" fill="url(#city)"/>
+
+  <g stroke-linecap="round">
+    <g stroke="rgba(34,211,238,0.05)" stroke-width="14">
+      <path d="M0 160H1600M0 320H1600M0 480H1600M0 640H1600M0 800H1600M0 960H1600"/>
+      <path d="M200 0V1000M400 0V1000M600 0V1000M800 0V1000M1000 0V1000M1200 0V1000M1400 0V1000"/>
+    </g>
+    <g stroke="rgba(34,211,238,0.10)" stroke-width="6">
+      <path d="M0 160H1600M0 320H1600M0 480H1600M0 640H1600M0 800H1600M0 960H1600"/>
+      <path d="M200 0V1000M400 0V1000M600 0V1000M800 0V1000M1000 0V1000M1200 0V1000M1400 0V1000"/>
+    </g>
+    <g stroke="rgba(34,211,238,0.30)" stroke-width="1.4">
+      <path d="M0 160H1600M0 480H1600M0 800H1600"/>
+      <path d="M400 0V1000M800 0V1000M1200 0V1000"/>
+    </g>
+    <path d="M-80 1040 L1680 -40" stroke="rgba(34,211,238,0.08)" stroke-width="26"/>
+    <path d="M-80 1040 L1680 -40" stroke="rgba(34,211,238,0.16)" stroke-width="10"/>
+    <path d="M-80 1040 L1680 -40" stroke="rgba(103,232,249,0.45)" stroke-width="2"/>
+    <path d="M-60 -40 L900 1040" stroke="rgba(139,92,246,0.10)" stroke-width="18"/>
+    <path d="M-60 -40 L900 1040" stroke="rgba(139,92,246,0.35)" stroke-width="1.6"/>
+  </g>
+
+  <g fill="rgba(34,211,238,0.5)">
+    <circle cx="400" cy="480" r="3"/>
+    <circle cx="800" cy="160" r="3"/>
+    <circle cx="1200" cy="800" r="3"/>
+    <circle cx="200" cy="800" r="2.4"/>
+    <circle cx="1400" cy="320" r="2.4"/>
+    <circle cx="600" cy="960" r="2.4"/>
+  </g>
+  <g fill="rgba(245,158,11,0.55)">
+    <circle cx="520" cy="240" r="2.4"/>
+    <circle cx="1040" cy="620" r="2.4"/>
+    <circle cx="280" cy="560" r="2"/>
+  </g>
+  <g fill="rgba(139,92,246,0.6)">
+    <circle cx="920" cy="880" r="2.6"/>
+    <circle cx="1320" cy="180" r="2.2"/>
+  </g>
+
+  <rect width="1600" height="1000" fill="url(#glowTop)"/>
+  <rect width="1600" height="1000" fill="url(#glowPurple)"/>
+  <rect width="1600" height="1000" fill="url(#vig)"/>
+</svg>

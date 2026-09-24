@@ -39,17 +39,17 @@ export default function ActivityFeed({ complaints = [], limit = 8 }) {
   }
 
   return (
-    <Card className="border-slate-200 h-full">
+    <Card className="border-[var(--border-subtle)] h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold flex items-center gap-2">
-            <Radio className="w-4 h-4 text-cyan-600" />
+          <h3 className="font-semibold flex items-center gap-2 text-[var(--text-primary)]">
+            <Radio className="w-4 h-4 text-[var(--accent-cyan)]" />
             Live Activity
           </h3>
-          <span className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
+          <span className="flex items-center gap-1.5 text-xs text-[var(--accent-green)] font-medium">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent-green)] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent-green)]" />
             </span>
             Live
           </span>
@@ -63,25 +63,25 @@ export default function ActivityFeed({ complaints = [], limit = 8 }) {
             description="New complaints and status changes will appear here."
           />
         ) : (
-          <ul className="divide-y divide-slate-100 max-h-[420px] overflow-y-auto">
+          <ul className="divide-y divide-[var(--border-subtle)] max-h-[540px] overflow-y-auto">
             {shown.map((e) => (
               <li key={e.kind + e.id + e.at}>
                 <Link
                   to={`/municipal/complaint/${e.id}`}
-                  className="flex items-start gap-3 px-5 py-3 hover:bg-slate-50 transition-colors group"
+                  className="flex items-start gap-3 px-5 py-3 hover:bg-[var(--bg-card-hover)] transition-colors group"
                 >
-                  <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${toneClass[e.tone] || 'bg-slate-400'}`} />
+                  <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${toneClass[e.tone] || 'bg-[var(--text-muted)]'}`} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-slate-800 truncate">{e.kind}</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)] truncate">{e.kind}</span>
                       <Badge variant={getBadgeVariant(e.status)} className="text-[10px]">
                         {getStatusLabel(e.status)}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-500 truncate">{e.complaintId} · {e.title}</p>
-                    <p className="text-[11px] text-slate-400">{formatRelativeTime(e.at)}</p>
+                    <p className="text-xs text-[var(--text-muted)] truncate">{e.complaintId} · {e.title}</p>
+                    <p className="text-[11px] text-[var(--text-muted)]">{formatRelativeTime(e.at)}</p>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-cyan-600 mt-1 flex-shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent-cyan)] mt-1 flex-shrink-0" />
                 </Link>
               </li>
             ))}

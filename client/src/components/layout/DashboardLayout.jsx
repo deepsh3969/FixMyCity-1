@@ -6,7 +6,7 @@ import { Button } from '../UI';
 
 export function DashboardLayout({ title, breadcrumbs, actions, children }) {
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-transparent">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
         <Header title={title} breadcrumbs={breadcrumbs} actions={actions} />
@@ -20,22 +20,22 @@ export function DashboardLayout({ title, breadcrumbs, actions, children }) {
 
 export function PublicLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8">
-        <NavLink to="/" className="flex items-center gap-2">
+    <div className="min-h-screen flex flex-col bg-transparent">
+      <header className="h-16 bg-[var(--panel)] backdrop-blur-xl border-b border-[var(--border-subtle)] flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40">
+        <NavLink to="/" className="flex items-center gap-2 group">
           <BrandLogo variant="md" />
-          <span className="font-bold text-lg text-slate-900">FixMyCity</span>
+          <span className="font-bold text-lg text-[var(--text-primary)] group-hover:text-[var(--accent-cyan)] transition-colors">FixMyCity</span>
         </NavLink>
         <div className="flex items-center gap-4">
-          <NavLink to="/login" className="text-slate-600 hover:text-slate-900 transition-colors font-medium">Login</NavLink>
+          <NavLink to="/login" className="text-[var(--text-secondary)] hover:text-[var(--accent-cyan)] transition-colors font-medium">Login</NavLink>
           <NavLink to="/register?role=citizen">
-            <Button size="sm">Report a Pothole</Button>
+            <Button size="sm" className="btn-glow">Report a Pothole</Button>
           </NavLink>
         </div>
       </header>
       <main className="flex-1">{children ?? <Outlet />}</main>
-      <footer className="py-8 border-t border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+      <footer className="py-8 border-t border-[var(--border-subtle)] bg-[var(--panel)] backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 text-center text-[var(--text-muted)] text-sm">
           FixMyCity &copy; 2026 — AI-Powered Proof-of-Repair Verification for Smart Cities
         </div>
       </footer>

@@ -15,12 +15,12 @@ export const Button = forwardRef(function Button({
   const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variants = {
-    primary: 'bg-[var(--accent-cyan)] text-white hover:opacity-90 focus:ring-[var(--accent-cyan)] shadow-sm',
-    secondary: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] focus:ring-[var(--border-default)] border border-[var(--border-default)] shadow-sm',
-    outline: 'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] focus:ring-[var(--border-default)] border border-[var(--border-default)]',
-    ghost: 'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] focus:ring-[var(--border-default)]',
-    danger: 'bg-[var(--accent-red)] text-white hover:opacity-90 focus:ring-[var(--accent-red)] shadow-sm',
-    success: 'bg-[var(--accent-green)] text-white hover:opacity-90 focus:ring-[var(--accent-green)] shadow-sm'
+    primary: 'bg-gradient-to-r from-[var(--accent-cyan)] to-cyan-500 text-[#030712] font-semibold hover:brightness-110 focus:ring-[var(--accent-cyan)] shadow-[0_0_18px_rgba(34,211,238,0.35)]',
+    secondary: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] focus:ring-[var(--border-default)] border border-[var(--border-subtle)] shadow-sm',
+    outline: 'bg-transparent text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)] focus:ring-[var(--border-default)] border border-[var(--border-default)]',
+    ghost: 'bg-transparent text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)] focus:ring-[var(--border-default)]',
+    danger: 'bg-[var(--accent-red)] text-white hover:brightness-110 focus:ring-[var(--accent-red)] shadow-sm',
+    success: 'bg-[var(--accent-green)] text-white hover:brightness-110 focus:ring-[var(--accent-green)] shadow-sm'
   }
   
   const sizes = {
@@ -125,7 +125,7 @@ export const Select = forwardRef(function Select({
   ...props 
 }, ref) {
   return (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       {label && (
         <label htmlFor={id} className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
           {label}
@@ -134,7 +134,7 @@ export const Select = forwardRef(function Select({
       <select
         ref={ref}
         id={id}
-        className={`w-full px-4 py-2.5 rounded-lg bg-[var(--bg-input)] border ${error ? 'border-[var(--accent-red)]' : 'border-[var(--border-default)]'} text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:border-[var(--accent-cyan)] transition-all appearance-none ${className}`}
+        className={`w-full px-4 py-2.5 rounded-lg bg-[var(--bg-input)] border ${error ? 'border-[var(--accent-red)]' : 'border-[var(--border-default)]'} text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)] focus:border-[var(--accent-cyan)] transition-all appearance-none`}
         {...props}
       >
         {placeholder && <option value="" disabled>{placeholder}</option>}
@@ -152,7 +152,7 @@ export const Select = forwardRef(function Select({
 Select.displayName = 'Select'
 
 export const Card = ({ children, className = '', hover = false }) => (
-  <div className={`bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl shadow-sm ${hover ? 'hover:border-[var(--border-default)] hover:shadow-md transition-all duration-200' : 'transition-colors duration-200'} ${className}`}>
+  <div className={`bg-[var(--bg-card)] backdrop-blur-[10px] border border-[var(--border-subtle)] rounded-xl shadow-lg ${hover ? 'hover:border-[var(--border-default)] hover:shadow-[0_14px_40px_rgba(0,0,0,0.45)] transition-all duration-200' : 'transition-colors duration-200'} ${className}`}>
     {children}
   </div>
 )
@@ -177,12 +177,12 @@ export const CardFooter = ({ children, className = '' }) => (
 
 export const Badge = ({ children, variant = 'default', className = '' }) => {
   const variants = {
-    default: 'bg-[var(--bg-card-hover)] text-[var(--text-secondary)] border border-[var(--border-default)]',
-    primary: 'bg-[var(--accent-cyan-dim)] text-[var(--accent-cyan)] border border-[var(--accent-cyan)]',
-    success: 'bg-[var(--accent-green-dim)] text-[var(--accent-green)] border border-[var(--accent-green)]',
-    warning: 'bg-[var(--accent-amber-dim)] text-[var(--accent-amber)] border border-[var(--accent-amber)]',
-    danger: 'bg-[var(--accent-red-dim)] text-[var(--accent-red)] border border-[var(--accent-red)]',
-    purple: 'bg-[var(--accent-purple-dim)] text-[var(--accent-purple)] border border-[var(--accent-purple)]'
+    default: 'bg-white/5 text-[var(--text-secondary)] border border-white/10',
+    primary: 'bg-[var(--accent-cyan-dim)] text-[var(--accent-cyan)] border border-[rgba(34,211,238,0.4)]',
+    success: 'bg-[var(--accent-green-dim)] text-[var(--accent-green)] border border-[rgba(16,185,129,0.4)]',
+    warning: 'bg-[var(--accent-amber-dim)] text-[var(--accent-amber)] border border-[rgba(245,158,11,0.4)]',
+    danger: 'bg-[var(--accent-red-dim)] text-[var(--accent-red)] border border-[rgba(239,68,68,0.4)]',
+    purple: 'bg-[var(--accent-purple-dim)] text-[var(--accent-purple)] border border-[rgba(139,92,246,0.4)]'
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${variants[variant]} ${className}`}>
@@ -278,17 +278,17 @@ export const Spinner = ({ size = 'md', className = '' }) => {
     xl: 'w-16 h-16 border-4'
   }
   return (
-    <div className={`${sizes[size]} border-cyan-600 border-t-transparent rounded-full animate-spin ${className}`} />
+    <div className={`${sizes[size]} border-[var(--accent-cyan)] border-t-transparent rounded-full animate-spin ${className}`} />
   )
 }
 
 export const EmptyState = ({ icon, title, description, action }) => (
   <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 mb-4">
+    <div className="w-16 h-16 rounded-full bg-[var(--accent-cyan-dim)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--accent-cyan)] mb-4">
       {icon}
     </div>
-    <h3 className="text-lg font-semibold text-slate-900 mb-2">{title}</h3>
-    <p className="text-slate-500 mb-6 max-w-sm">{description}</p>
+    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">{title}</h3>
+    <p className="text-[var(--text-muted)] mb-6 max-w-sm">{description}</p>
     {action}
   </div>
 )
@@ -297,12 +297,12 @@ export const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
   if (!isOpen) return null
   
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div className={`w-full max-w-2xl max-h-[90vh] overflow-hidden bg-white border border-slate-200 rounded-xl shadow-xl ${className}`}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className={`w-full max-w-2xl max-h-[90vh] overflow-hidden bg-[var(--bg-card-solid)] border border-[var(--border-subtle)] rounded-xl shadow-xl ${className}`}>
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
-            <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)]">
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">{title}</h2>
+            <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
@@ -323,8 +323,8 @@ export const Tabs = ({ tabs, activeTab, onChange, className = '' }) => (
         onClick={() => onChange(tab.id)}
         className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-150 ${
           activeTab === tab.id
-            ? 'bg-[var(--accent-cyan)] text-white shadow-sm'
-            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]'
+            ? 'bg-[var(--accent-cyan)] text-[#030712] font-semibold shadow-[0_0_16px_rgba(34,211,238,0.4)]'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/5'
         }`}
       >
         {tab.label}

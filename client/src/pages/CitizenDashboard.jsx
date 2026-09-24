@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { complaintAPI } from '../utils/api'
 import { formatRelativeTime, getSeverityColor, getStatusColor, getStatusLabel, getSeverityBadgeVariant, getBadgeVariant, IMAGE_FALLBACK } from '../utils/helpers'
-import { Plus, MapPin, AlertTriangle, Clock, CheckCircle, Loader2, ChevronRight, History } from 'lucide-react'
+import { Plus, MapPin, AlertTriangle, CheckCircle, ChevronRight, Activity, Sparkles, Hammer, Shield, Map as MapIcon } from 'lucide-react'
 import { Button, Card, CardContent, Badge, ProgressBar, EmptyState, Spinner, SkeletonList } from '../components/UI'
 import ComplaintMap from '../components/ComplaintMap'
 import ImpactPanel from '../components/ImpactPanel'
@@ -19,9 +19,12 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
     total: 0,
     active: 0,
     underRepair: 0,
-    resolved: 0
+    resolved: 0,
+    aiVerified: 0
   })
+  const [aiStats, setAiStats] = useState({ analyzed: 0, highConf: 0, manual: 0, unverified: 0 })
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 })
+  const [mapComplaints, setMapComplaints] = useState([])
   const [activeTab, setActiveTab] = useState('all')
   const [search, setSearch] = useState('')
 
@@ -41,11 +44,20 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
       
       const allComplaints = await complaintAPI.getMy({ limit: 100 })
       const all = allComplaints.data.complaints
+      setMapComplaints(all)
+      const withVer = all.filter(c => c.verificationResultId)
       setStats({
         total: all.length,
         active: all.filter(c => ['REPORTED', 'ASSIGNED', 'VERIFICATION', 'MANUAL_REVIEW'].includes(c.status)).length,
         underRepair: all.filter(c => c.status === 'UNDER_REPAIR').length,
-        resolved: all.filter(c => c.status === 'RESOLVED').length
+        resolved: all.filter(c => c.status === 'RESOLVED').length,
+        aiVerified: withVer.filter(c => c.verificationResultId.decision === 'VERIFIED').length
+      })
+      setAiStats({
+        analyzed: withVer.length,
+        highConf: withVer.filter(c => c.verificationResultId.confidence === 'HIGH').length,
+        manual: all.filter(c => c.status === 'MANUAL_REVIEW' || c.verificationResultId?.decision === 'MANUAL_REVIEW').length,
+        unverified: all.length - withVer.length
       })
     } catch (err) {
       setError('Failed to load complaints')
@@ -148,89 +160,112 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
       {/* Stats Cards */}
       {!isHistoryView && (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[var(--text-muted)] text-sm">Total Reports</p>
-                <p className="text-3xl font-bold text-[var(--text-primary)]">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 rounded-xl bg-[var(--accent-blue-dim)] flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-[var(--accent-blue)]" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[var(--text-muted)] text-sm">Active</p>
-                <p className="text-3xl font-bold text-[var(--accent-amber)]">{stats.active}</p>
-              </div>
-              <div className="w-12 h-12 rounded-xl bg-[var(--accent-amber-dim)] flex items-center justify-center">
-                <Clock className="w-6 h-6 text-[var(--accent-amber)]" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[var(--text-muted)] text-sm">Under Repair</p>
-                <p className="text-3xl font-bold text-[var(--accent-amber)]">{stats.underRepair}</p>
-              </div>
-              <div className="w-12 h-12 rounded-xl bg-[var(--accent-amber-dim)] flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-[var(--accent-amber)]" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card hover className="border-[var(--border-subtle)]">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[var(--text-muted)] text-sm">Resolved</p>
-                <p className="text-3xl font-bold text-[var(--accent-green)]">{stats.resolved}</p>
-              </div>
-              <div className="w-12 h-12 rounded-xl bg-[var(--accent-green-dim)] flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-[var(--accent-green)]" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Active Reports', value: stats.active, icon: Activity, tone: 'cyan' },
+          { label: 'Auto / AI Verified', value: stats.aiVerified, icon: Sparkles, tone: 'purple' },
+          { label: 'Under Repair', value: stats.underRepair, icon: Hammer, tone: 'blue' },
+          { label: 'Resolved', value: stats.resolved, icon: CheckCircle, tone: 'green' }
+        ].map((kpi) => {
+          const tones = {
+            cyan: { box: 'bg-[var(--accent-cyan-dim)] border-[rgba(34,211,238,0.3)]', text: 'text-[var(--accent-cyan)]', bar: 'from-[var(--accent-cyan)]' },
+            purple: { box: 'bg-[var(--accent-purple-dim)] border-[rgba(139,92,246,0.3)]', text: 'text-[var(--accent-purple)]', bar: 'from-[var(--accent-purple)]' },
+            blue: { box: 'bg-[var(--accent-blue-dim)] border-[rgba(59,130,246,0.3)]', text: 'text-[var(--accent-blue)]', bar: 'from-[var(--accent-blue)]' },
+            green: { box: 'bg-[var(--accent-green-dim)] border-[rgba(16,185,129,0.3)]', text: 'text-[var(--accent-green)]', bar: 'from-[var(--accent-green)]' }
+          }
+          const t = tones[kpi.tone]
+          const Icon = kpi.icon
+          return (
+            <Card key={kpi.label} hover className="relative overflow-hidden group">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="panel-title mb-1.5">{kpi.label}</p>
+                    <p className="text-3xl font-bold mono-num text-[var(--text-primary)] group-hover:text-glow-cyan transition-all">{kpi.value}</p>
+                  </div>
+                  <div className={`w-12 h-12 rounded-xl border flex items-center justify-center flex-shrink-0 ${t.box}`}>
+                    <Icon className={`w-6 h-6 ${t.text}`} />
+                  </div>
+                </div>
+              </CardContent>
+              <div className={`absolute bottom-0 left-0 h-0.5 w-full bg-gradient-to-r ${t.bar} to-transparent opacity-70`} />
+            </Card>
+          )
+        })}
       </div>
       )}
 
-      {/* DEMO Impact metrics */}
-      {!isHistoryView && (
-        <div className="grid lg:grid-cols-3 gap-4">
+      {/* Reference row: Report Flow + Live Map + How It Really Works */}
+      {!isHistoryView && !loading && !error && (
+        <div className="grid lg:grid-cols-4 gap-4">
           <div className="lg:col-span-1">
             <ImpactPanel stats={stats} />
           </div>
-          <div className="lg:col-span-2">
-            <Card className="border-[var(--accent-cyan)]/30 h-full overflow-hidden">
-              <div className="px-5 py-3.5 border-b border-[var(--accent-cyan)]/20 bg-gradient-to-r from-[var(--accent-purple-dim)] to-[var(--accent-cyan-dim)] flex items-center justify-between">
-                <h3 className="font-semibold text-sm text-[var(--text-primary)]">How FixMyCity works</h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--text-primary)] text-white">Demo</span>
+
+          <Card className="lg:col-span-2 border-[var(--accent-cyan)]/30 overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[rgba(34,211,238,0.25)] bg-gradient-to-r from-[var(--accent-cyan-dim)] to-transparent flex items-center justify-between">
+              <h3 className="font-semibold text-sm flex items-center gap-2 text-[var(--text-primary)]">
+                <MapIcon className="w-4 h-4 text-[var(--accent-cyan)]" />
+                Live City Map
+              </h3>
+              <span className="tech-label text-[var(--accent-cyan)]">MAP</span>
+            </div>
+            <ComplaintMap complaints={mapComplaints} height={320} heatmap />
+          </Card>
+
+          <Card className="border-[var(--accent-purple)]/30 overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[rgba(139,92,246,0.25)] bg-gradient-to-r from-[var(--accent-purple-dim)] to-transparent flex items-center justify-between">
+              <h3 className="font-semibold text-sm flex items-center gap-2 text-[var(--text-primary)]">
+                <Shield className="w-4 h-4 text-[var(--accent-purple)]" />
+                How It Really Works
+              </h3>
+            </div>
+            <CardContent className="p-5">
+              <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold">
+                {['REPORT', 'VERIFY', 'DISPATCH', 'TRACK', 'FIXED'].map((s, i, arr) => (
+                  <span key={s} className="flex items-center gap-1.5">
+                    <span className={`px-2 py-1 rounded font-mono tracking-wider ${
+                      s === 'FIXED'
+                        ? 'bg-[var(--accent-green)] text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+                        : 'bg-[var(--accent-cyan)] text-[#030712] shadow-[0_0_12px_rgba(34,211,238,0.35)]'
+                    }`}>{s}</span>
+                    {i < arr.length - 1 && <span className="flow-arrow">→</span>}
+                  </span>
+                ))}
               </div>
-              <CardContent className="p-5">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-                  {['REPORT', 'TRACK', 'REPAIR', 'AI VERIFY', 'PROVE'].map((s, i, arr) => (
-                    <span key={s} className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded bg-[var(--accent-cyan)] text-white">{s}</span>
-                      {i < arr.length - 1 && <span className="text-[var(--text-muted)]">→</span>}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-[var(--text-muted)] mt-3">
-                  We verify the location, not just the repair — GPS + viewpoint + landmarks + road geometry + pothole region (score /100).
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+              <ul className="mt-4 space-y-2.5 text-xs text-[var(--text-secondary)] leading-relaxed">
+                <li><span className="text-[var(--accent-cyan)] font-semibold">Every report</span> gets AI-verified, GPS-stamped and dispatched instantly.</li>
+                <li>Duplicate detection uses road geometry + location match before dispatch.</li>
+                <li>Repairs close only after AI confirms before/after evidence — <span className="text-[var(--accent-green)] font-semibold">no fake fixes</span>.</li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
+      )}
+
+      {/* AI Report Intelligence */}
+      {!isHistoryView && initialLoaded && !error && (
+        <Card className="overflow-hidden border-[rgba(34,211,238,0.3)]">
+          <div className="px-5 py-3.5 border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent flex items-center justify-between">
+            <h3 className="font-semibold text-sm flex items-center gap-2 text-[var(--text-primary)]">
+              <Sparkles className="w-4 h-4 text-[var(--accent-cyan)]" />
+              AI Report Intelligence
+            </h3>
+            <span className="tech-label text-[var(--accent-green)]">LIVE</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-[var(--border-subtle)]">
+            {[
+              { label: 'Reports analyzed', value: aiStats.analyzed, tone: 'text-[var(--accent-cyan)]' },
+              { label: 'High confidence', value: aiStats.highConf, tone: 'text-[var(--accent-green)]' },
+              { label: 'Manual review', value: aiStats.manual, tone: 'text-[var(--accent-amber)]' },
+              { label: 'Unverified', value: aiStats.unverified, tone: 'text-[var(--text-secondary)]' }
+            ].map((cell) => (
+              <div key={cell.label} className="px-5 py-4">
+                <p className="tech-label mb-1.5">{cell.label}</p>
+                <p className={`text-2xl font-bold mono-num ${cell.tone}`}>{cell.value}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
       )}
 
       {/* Tabs */}
@@ -277,8 +312,8 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
         ) : (
           <div className="divide-y divide-[var(--border-subtle)]">
             {sortedComplaints.map((complaint) => (
-              <Link key={complaint._id} to={`/citizen/complaint/${complaint._id}`} className="block transition-all duration-200 hover:translate-x-1">
-                <div className="p-4 hover:border-[var(--border-default)] border border-transparent transition-all duration-200 rounded-lg">
+              <Link key={complaint._id} to={`/citizen/complaint/${complaint._id}`} className="block group transition-all duration-200">
+                <div className="p-4 hover:bg-white/[0.03] border border-transparent hover:border-[var(--border-subtle)] transition-all duration-200 rounded-lg">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="w-20 h-20 flex-shrink-0 relative rounded-md overflow-hidden bg-[var(--bg-card-hover)] border border-[var(--border-subtle)]">
                       {complaint.imageUrl ? (
@@ -296,15 +331,12 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4 mb-2">
                         <div>
-                          <h3 className="font-semibold text-base lg:text-lg text-[var(--text-primary)]">{complaint.title}</h3>
+                          <h3 className="font-semibold text-base lg:text-lg text-[var(--text-primary)] group-hover:text-[var(--accent-cyan)] transition-colors">{complaint.title}</h3>
                           <p className="text-xs text-[var(--text-muted)] font-mono">{complaint.complaintId} • {formatRelativeTime(complaint.createdAt)}</p>
                         </div>
-                        <Badge variant={getBadgeVariant(complaint.status)}>
-                          {getStatusLabel(complaint.status)}
-                        </Badge>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--text-muted)]">
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-muted)]">
                         <span className="flex items-center gap-1">
                           <AlertTriangle className="w-3.5 h-3.5" />
                           <Badge variant={getSeverityBadgeVariant(complaint.severity)} className="capitalize">
@@ -318,9 +350,9 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
                           </span>
                         )}
                         {(complaint.address || complaint.latitude) && (
-                          <span className="flex items-center gap-1 min-w-0">
-                            <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                            <span className="truncate">{describeLocation(complaint.latitude, complaint.longitude, complaint.address)}</span>
+                          <span className="flex items-center gap-1.5 min-w-0 px-2 py-0.5 rounded-md bg-[var(--accent-cyan-dim)] border border-[rgba(34,211,238,0.3)]">
+                            <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-[var(--accent-cyan)]" />
+                            <span className="truncate text-xs font-medium text-[var(--accent-cyan)]">{describeLocation(complaint.latitude, complaint.longitude, complaint.address)}</span>
                           </span>
                         )}
                         {complaint.contractorId && (
@@ -339,27 +371,18 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
                           </Badge>
                         </div>
                       )}
-
-                      <div className="mt-3 flex items-center gap-3">
-                        <div className="flex-1 h-1.5 bg-[var(--border-subtle)] rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              complaint.status === 'RESOLVED' || complaint.status === 'VERIFIED'
-                                ? 'bg-gradient-to-r from-[var(--accent-green)] to-[var(--accent-cyan)]'
-                                : complaint.status === 'REJECTED'
-                                  ? 'bg-[var(--accent-red)]'
-                                  : 'bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-purple)]'
-                            }`}
-                            style={{ width: `${progressPct(complaint.status)}%` }}
-                          />
-                        </div>
-                        <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] flex-shrink-0">
-                          {getStatusLabel(complaint.status)}
-                        </span>
-                      </div>
                     </div>
 
-                    <ChevronRight className="w-5 h-5 text-[var(--text-muted)] flex-shrink-0" />
+                    <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
+                      <Badge variant={getBadgeVariant(complaint.status)}>
+                        {getStatusLabel(complaint.status)}
+                      </Badge>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent-cyan)] bg-[var(--accent-cyan-dim)] border border-[rgba(34,211,238,0.35)] px-3 py-1.5 rounded-md group-hover:shadow-[0_0_16px_rgba(34,211,238,0.35)] transition-shadow">
+                        Open Details →
+                      </span>
+                    </div>
+
+                    <ChevronRight className="hidden sm:block w-5 h-5 text-[var(--text-muted)] flex-shrink-0 group-hover:text-[var(--accent-cyan)] transition-colors" />
                   </div>
                 </div>
               </Link>

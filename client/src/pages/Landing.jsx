@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Shield, MapPin, Hammer, CheckCircle, ArrowRight, Zap, Eye, Target, Layers, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Shield, MapPin, Hammer, CheckCircle, ArrowRight, Zap, Eye, Target, Layers, TrendingUp, AlertTriangle, Camera } from 'lucide-react'
 import { Button } from '../components/UI'
 import BrandLogo from '../components/BrandLogo'
 
@@ -56,53 +56,113 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-40 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(6,182,212,0.15)_0%,transparent_50%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(168,85,247,0.1)_0%,transparent_50%)] pointer-events-none" />
+      <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-32 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(34,211,238,0.16)_0%,transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(139,92,246,0.12)_0%,transparent_50%)] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent-cyan-dim)] border border-[rgba(34,211,238,0.35)] text-[var(--accent-cyan)] text-sm font-medium mb-8 backdrop-blur-sm">
               <Zap className="w-4 h-4" />
-              <span>Smart Cities & Urban Development Hackathon</span>
+              <span>Smart Cities &amp; Urban Development Hackathon</span>
             </div>
 
             <div className="flex justify-center mb-6">
               <BrandLogo
-                variant="lg"
-                className="shadow-xl shadow-cyan-500/20"
+                variant="xl"
+                className="glow-cyan rounded-[2rem]"
               />
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 gradient-text text-glow-cyan">
               FixMyCity
             </h1>
             
-            <p className="text-2xl sm:text-3xl text-slate-700 mb-8 font-medium">
+            <p className="text-xl sm:text-2xl text-[var(--text-primary)] mb-4 font-semibold tracking-wide">
               &ldquo;The Pothole Nobody Reported&rdquo;
             </p>
             
-            <p className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-10 leading-relaxed">
               Report it. Track it. Prove it was fixed.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <Button size="xl" asChild>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
+              <Button size="xl" className="btn-glow uppercase tracking-wider font-bold" asChild>
                 <Link to="/register?role=citizen">
                   Report a Pothole
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
-              <Button size="xl" variant="outline" asChild>
+              <Button size="xl" variant="outline" className="backdrop-blur-sm uppercase tracking-wider font-semibold" asChild>
                 <Link to="/login">Login to Dashboard</Link>
               </Button>
             </div>
 
             {/* Trust indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-8 text-slate-500 text-sm">
-              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-cyan-600" /> AI Verified</span>
-              <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-green-600" /> GPS Tracked</span>
-              <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-amber-600" /> Anti-Fraud</span>
+            <div className="flex flex-wrap items-center justify-center gap-8 text-[var(--text-muted)] text-sm">
+              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-[var(--accent-cyan)]" /> AI Verified</span>
+              <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-[var(--accent-green)]" /> GPS Tracked</span>
+              <span className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[var(--accent-amber)]" /> Anti-Fraud</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Three Steps (reference composition) */}
+      <section className="pb-20 lg:pb-28">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                step: 'STEP 1',
+                icon: Camera,
+                accent: 'cyan',
+                title: 'AI-Verified Reporting',
+                description: 'Citizens capture road damage with their phone. AI verifies each report automatically — no false or duplicate reports ever enter the system.'
+              },
+              {
+                step: 'STEP 2',
+                icon: MapPin,
+                accent: 'purple',
+                title: 'GPS Tracked Dispatch',
+                description: 'Every complaint is pinned with GPS coordinates, severity scored, and instantly dispatched to the nearest municipal zone and contractor.'
+              },
+              {
+                step: 'STEP 3',
+                icon: Shield,
+                accent: 'green',
+                title: 'Anti-Fraud Proof of Fix',
+                description: 'Every repair is validated by AI — GPS, viewpoint, landmarks, road geometry. Nobody can fake a fix that never happened.'
+              }
+            ].map((card, i) => (
+              <div
+                key={card.step}
+                className={`glass hover-lift p-6 relative overflow-hidden group ${i === 1 ? 'md:-translate-y-3' : ''}`}
+              >
+                <div className={`absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity ${
+                  card.accent === 'cyan' ? 'bg-cyan-400' : card.accent === 'purple' ? 'bg-purple-500' : 'bg-emerald-400'
+                }`} />
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="tech-label text-[var(--accent-cyan)]">{card.step}</span>
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center border ${
+                      card.accent === 'cyan'
+                        ? 'bg-[var(--accent-cyan-dim)] border-[rgba(34,211,238,0.4)] text-[var(--accent-cyan)]'
+                        : card.accent === 'purple'
+                          ? 'bg-[var(--accent-purple-dim)] border-[rgba(139,92,246,0.4)] text-[var(--accent-purple)]'
+                          : 'bg-[var(--accent-green-dim)] border-[rgba(16,185,129,0.4)] text-[var(--accent-green)]'
+                    }`}>
+                      <card.icon className="w-5 h-5" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3 group-hover:text-[var(--accent-cyan)] transition-colors">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                    {card.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

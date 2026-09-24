@@ -64,25 +64,28 @@ const DEMO_CASES = [
 
 const TONE_STYLES = {
   emerald: {
-    border: 'border-emerald-500/30',
-    bg: 'bg-emerald-500/5',
-    badge: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30',
-    score: 'text-emerald-600',
-    bar: 'bg-emerald-500'
+    border: 'border-[rgba(16,185,129,0.45)]',
+    bg: 'bg-[rgba(16,185,129,0.07)]',
+    badge: 'bg-[var(--accent-green-dim)] text-[var(--accent-green)] border-[rgba(16,185,129,0.45)]',
+    score: 'text-[var(--accent-green)]',
+    bar: 'bg-[var(--accent-green)]',
+    glow: 'shadow-[0_0_20px_rgba(16,185,129,0.18)]'
   },
   red: {
-    border: 'border-red-500/30',
-    bg: 'bg-red-500/5',
-    badge: 'bg-red-500/10 text-red-600 border-red-500/30',
-    score: 'text-red-600',
-    bar: 'bg-red-500'
+    border: 'border-[rgba(239,68,68,0.45)]',
+    bg: 'bg-[rgba(239,68,68,0.07)]',
+    badge: 'bg-[var(--accent-red-dim)] text-[var(--accent-red)] border-[rgba(239,68,68,0.45)]',
+    score: 'text-[var(--accent-red)]',
+    bar: 'bg-[var(--accent-red)]',
+    glow: 'shadow-[0_0_20px_rgba(239,68,68,0.18)]'
   },
   amber: {
-    border: 'border-amber-500/30',
-    bg: 'bg-amber-500/5',
-    badge: 'bg-amber-500/10 text-amber-600 border-amber-500/30',
-    score: 'text-amber-600',
-    bar: 'bg-amber-500'
+    border: 'border-[rgba(245,158,11,0.45)]',
+    bg: 'bg-[rgba(245,158,11,0.07)]',
+    badge: 'bg-[var(--accent-amber-dim)] text-[var(--accent-amber)] border-[rgba(245,158,11,0.45)]',
+    score: 'text-[var(--accent-amber)]',
+    bar: 'bg-[var(--accent-amber)]',
+    glow: 'shadow-[0_0_20px_rgba(245,158,11,0.18)]'
   }
 }
 
@@ -99,41 +102,41 @@ function CaseCard({ demoCase, compact }) {
   const tone = TONE_STYLES[demoCase.tone]
 
   return (
-    <div className={`rounded-xl border ${tone.border} ${tone.bg} overflow-hidden`}>
+    <div className={`rounded-xl border ${tone.border} ${tone.bg} ${tone.glow} overflow-hidden`}>
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-white/40 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-white/5 transition-colors"
         aria-expanded={expanded}
       >
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tone.badge}`}>
             {demoCase.label}
           </span>
-          <span className="font-semibold text-sm text-slate-900 truncate">{demoCase.title}</span>
+          <span className="font-semibold text-sm text-[var(--text-primary)] min-w-0">{demoCase.title}</span>
         </div>
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <span className={`font-bold tabular-nums ${tone.score}`}>{demoCase.score}/100</span>
+        <div className="flex items-center gap-3 flex-wrap justify-end">
+          <span className={`font-bold mono-num tabular-nums ${tone.score}`}>{demoCase.score}/100</span>
           <Badge variant={demoCase.result === 'VERIFIED' ? 'success' : demoCase.result === 'REJECTED' ? 'danger' : 'warning'}>
             {demoCase.result}
           </Badge>
-          {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />}
         </div>
       </button>
 
       {expanded && (
-        <div className="px-4 pb-4 space-y-4 border-t border-slate-200/70 pt-4">
-          <p className="text-sm text-slate-600">{demoCase.scenario}</p>
+        <div className="px-4 pb-4 space-y-4 border-t border-[var(--border-subtle)] pt-4">
+          <p className="text-sm text-[var(--text-secondary)]">{demoCase.scenario}</p>
 
-          <div className="grid sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {SCORE_ROWS.map((row) => {
               const val = demoCase.scores[row.key]
               const pct = Math.round((val / row.max) * 100)
               return (
-                <div key={row.key} className="rounded-lg bg-white/70 border border-slate-200/70 p-2.5">
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500 mb-1.5">{row.label}</p>
-                  <p className="text-sm font-bold text-slate-900 tabular-nums mb-1.5">{val}/{row.max}</p>
-                  <div className="h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                <div key={row.key} className="rounded-lg bg-[var(--panel-2)] border border-[var(--border-subtle)] p-2.5">
+                  <p className="tech-label mb-1.5">{row.label}</p>
+                  <p className="text-sm font-bold text-[var(--text-primary)] mono-num tabular-nums mb-1.5">{val}/{row.max}</p>
+                  <div className="h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
                     <div className={`h-full rounded-full ${tone.bar}`} style={{ width: `${pct}%` }} />
                   </div>
                 </div>
@@ -141,21 +144,21 @@ function CaseCard({ demoCase, compact }) {
             })}
           </div>
 
-          <div className="flex flex-wrap gap-3 text-xs text-slate-600">
-            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 border border-slate-200/70">
+          <div className="flex flex-wrap gap-3 text-xs text-[var(--text-secondary)]">
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-[var(--panel-2)] border border-[var(--border-subtle)]">
               <MapPinOff className="w-3.5 h-3.5" /> GPS drift: {demoCase.distanceMeters}m
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 border border-slate-200/70">
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-[var(--panel-2)] border border-[var(--border-subtle)]">
               Confidence: {demoCase.confidence}
             </span>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">AI Explanation</p>
+            <p className="tech-label mb-2">AI Explanation</p>
             <ul className="space-y-1.5">
               {demoCase.explanation.map((line, i) => (
-                <li key={i} className="flex gap-2 text-sm text-slate-700">
-                  <span className="text-slate-400 mt-0.5">•</span>
+                <li key={i} className="flex gap-2 text-sm text-[var(--text-secondary)]">
+                  <span className="text-[var(--accent-cyan)] mt-0.5">•</span>
                   <span>{line}</span>
                 </li>
               ))}
@@ -169,20 +172,20 @@ function CaseCard({ demoCase, compact }) {
 
 export function VerificationLabCases({ compact = false }) {
   return (
-    <Card className="border-slate-200">
-      <CardHeader className="border-b border-slate-200">
+    <Card>
+      <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Beaker className="w-5 h-5 text-cyan-600" />
-            <h3 className="font-semibold text-slate-900">Verification Lab</h3>
+            <Beaker className="w-5 h-5 text-[var(--accent-cyan)]" />
+            <h3 className="panel-title text-[var(--accent-cyan)]">Verification Lab</h3>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/30">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--accent-amber-dim)] text-[var(--accent-amber)] border border-[rgba(245,158,11,0.45)]">
             <AlertTriangle className="w-3 h-3" />
             Demo / Simulated Verification
           </span>
         </div>
-        <p className="text-xs text-slate-500 mt-1.5">
-          Three illustrative proof-of-repair scenarios. Scores below are <strong>simulated for demonstration</strong> — not live AI results.
+        <p className="text-xs text-[var(--text-muted)] mt-1.5">
+          Three illustrative proof-of-repair scenarios. Scores below are <strong className="text-[var(--text-secondary)]">simulated for demonstration</strong> — not live AI results.
           Real verifications run on actual uploaded evidence via the SIFT + Gemini pipeline.
         </p>
       </CardHeader>
@@ -190,10 +193,10 @@ export function VerificationLabCases({ compact = false }) {
         {DEMO_CASES.map((c) => (
           <CaseCard key={c.id} demoCase={c} compact={compact} />
         ))}
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-xs text-slate-600">
-          <ShieldCheck className="w-4 h-4 text-cyan-600 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--accent-cyan-dim)] border border-[rgba(34,211,238,0.3)] text-xs text-[var(--text-secondary)]">
+          <ShieldCheck className="w-4 h-4 text-[var(--accent-cyan)] flex-shrink-0 mt-0.5" />
           <p>
-            <strong>Decision thresholds (real system):</strong> 80–100 → VERIFIED · 60–79 → MANUAL REVIEW · 0–59 → REJECTED.
+            <strong className="text-[var(--text-primary)]">Decision thresholds (real system):</strong> 80–100 → VERIFIED · 60–79 → MANUAL REVIEW · 0–59 → REJECTED.
             Weights: GPS 30 · Viewpoint 20 · Landmarks 20 · Road Scene 20 · Pothole Region 10 = 100.
           </p>
         </div>

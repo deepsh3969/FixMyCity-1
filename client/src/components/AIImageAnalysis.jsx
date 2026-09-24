@@ -5,53 +5,51 @@ import {
 import { Button } from './UI'
 
 const severityTone = {
-  LOW: { dot: 'bg-emerald-500', text: 'text-emerald-700', chip: 'bg-emerald-50 border-emerald-200' },
-  MEDIUM: { dot: 'bg-amber-500', text: 'text-amber-700', chip: 'bg-amber-50 border-amber-200' },
-  HIGH: { dot: 'bg-orange-500', text: 'text-orange-700', chip: 'bg-orange-50 border-orange-200' },
-  CRITICAL: { dot: 'bg-red-500', text: 'text-red-700', chip: 'bg-red-50 border-red-200' }
+  LOW: 'pill pill-verified',
+  MEDIUM: 'pill pill-review',
+  HIGH: 'pill text-[var(--accent-amber)] bg-[var(--accent-amber-dim)] border-[rgba(245,158,11,0.55)] shadow-[0_0_16px_rgba(245,158,11,0.22)]',
+  CRITICAL: 'pill pill-rejected shadow-[0_0_16px_rgba(239,68,68,0.25)]'
 }
 
 const evidenceTone = {
-  GOOD: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  FAIR: 'bg-amber-50 text-amber-700 border-amber-200',
-  POOR: 'bg-orange-50 text-orange-700 border-orange-200',
-  INSUFFICIENT: 'bg-red-50 text-red-700 border-red-200'
+  GOOD: 'text-[var(--accent-green)] bg-[var(--accent-green-dim)] border-[rgba(16,185,129,0.45)]',
+  FAIR: 'text-[var(--accent-amber)] bg-[var(--accent-amber-dim)] border-[rgba(245,158,11,0.45)]',
+  POOR: 'text-[var(--accent-amber)] bg-[var(--accent-amber-dim)] border-[rgba(245,158,11,0.6)]',
+  INSUFFICIENT: 'text-[var(--accent-red)] bg-[var(--accent-red-dim)] border-[rgba(239,68,68,0.5)]'
 }
 
 function confidenceColor(conf) {
-  if (conf >= 80) return 'from-cyan-500 to-emerald-500'
-  if (conf >= 60) return 'from-cyan-500 to-amber-500'
-  return 'from-amber-500 to-red-500'
+  if (conf >= 80) return 'from-[var(--accent-cyan)] to-[var(--accent-green)]'
+  if (conf >= 60) return 'from-[var(--accent-cyan)] to-[var(--accent-amber)]'
+  return 'from-[var(--accent-amber)] to-[var(--accent-red)]'
 }
 
 function confidenceTextColor(conf) {
-  if (conf >= 80) return 'text-emerald-600'
-  if (conf >= 60) return 'text-amber-600'
-  return 'text-red-600'
+  if (conf >= 80) return 'text-[var(--accent-green)]'
+  if (conf >= 60) return 'text-[var(--accent-amber)]'
+  return 'text-[var(--accent-red)]'
 }
 
-function PanelHeader({ icon: Icon, title, subtitle, tone }) {
+function PanelHeader({ subtitle, badge }) {
   return (
-    <div className={`flex items-start justify-between gap-3 px-5 py-4 border-b ${tone.header}`}>
-      <div className="flex items-center gap-3 min-w-0">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${tone.iconBg}`}>
-          <Icon className={`w-5 h-5 ${tone.icon}`} />
-        </div>
+    <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-card-solid)]">
+      <div className="flex items-start gap-3 min-w-0">
+        <span className="w-2 h-2 rounded-full mt-2 flex-shrink-0 bg-[var(--accent-cyan)] shadow-[0_0_10px_2px_rgba(34,211,238,0.85)] animate-pulse" />
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">AI Image Analysis</p>
-          <p className={`font-semibold text-sm truncate ${tone.title}`}>{subtitle}</p>
+          <p className="tech-label">SMART POTHOLE INTELLIGENCE</p>
+          {subtitle && <div className="text-sm font-semibold text-[var(--text-primary)] mt-1">{subtitle}</div>}
         </div>
       </div>
-      {title}
+      {badge}
     </div>
   )
 }
 
-function Field({ label, children, className = '' }) {
+function Row({ label, children }) {
   return (
-    <div className={className}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)] mb-1.5">{label}</p>
-      <div className="text-sm text-[var(--text-primary)] leading-relaxed">{children}</div>
+    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 px-4 py-3">
+      <p className="tech-label sm:w-36 sm:pt-1.5 flex-shrink-0">{label}</p>
+      <div className="text-sm text-[var(--text-primary)] leading-relaxed min-w-0">{children}</div>
     </div>
   )
 }
@@ -59,40 +57,37 @@ function Field({ label, children, className = '' }) {
 function AnalyzingView({ previewUrl }) {
   return (
     <div
-      className="rounded-xl border border-[var(--accent-cyan)]/40 bg-slate-950 overflow-hidden"
+      className="scan-line rounded-xl border border-[var(--border-default)] bg-[var(--bg-card)] backdrop-blur-[14px] overflow-hidden shadow-[0_0_26px_rgba(34,211,238,0.16)]"
       data-testid="ai-analysis-analyzing"
       aria-live="polite"
     >
-      <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-cyan-500/20">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center">
-            <ScanLine className="w-5 h-5 text-cyan-300 animate-pulse" />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-400/80">AI Image Analysis</p>
-            <p className="font-semibold text-sm text-cyan-100">ANALYZING — computer vision in progress…</p>
-          </div>
-        </div>
-        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-400/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping" />
-          Live
-        </span>
-      </div>
+      <PanelHeader
+        subtitle={
+          <span className="inline-flex items-center gap-2 text-[var(--accent-cyan)] text-glow-cyan">
+            <ScanLine className="w-4 h-4 animate-pulse" />
+            ANALYZING…
+          </span>
+        }
+        badge={
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-[var(--accent-cyan-dim)] text-[var(--accent-cyan)] border border-[var(--border-default)] flex-shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-cyan)] animate-ping" />
+            Live
+          </span>
+        }
+      />
 
       <div className="relative">
         {previewUrl && (
           <div className="relative max-h-56 overflow-hidden">
-            <img src={previewUrl} alt="Analyzing uploaded evidence" className="w-full max-h-56 object-contain bg-black/40" />
-            <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-transparent to-cyan-500/10" />
-            <div className="absolute inset-x-0 top-0 h-0.5 bg-cyan-400 shadow-[0_0_18px_4px_rgba(34,211,238,0.7)] animate-[scanline_2s_ease-in-out_infinite]" />
-            <style>{`@keyframes scanline { 0%{top:0} 50%{top:calc(100% - 2px)} 100%{top:0} }`}</style>
+            <img src={previewUrl} alt="Analyzing uploaded evidence" className="w-full max-h-56 object-contain bg-[var(--bg-card-solid)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan-dim)] via-transparent to-[var(--accent-cyan-dim)]" />
           </div>
         )}
         <div className="p-5 space-y-3">
           {['Detecting road defects', 'Extracting scene features', 'Grading evidence quality'].map((step, i) => (
             <div key={step} className="flex items-center gap-3 text-sm">
-              <span className="w-5 h-5 rounded-full border-2 border-cyan-400/60 border-t-transparent animate-spin flex-shrink-0" style={{ animationDelay: `${i * 0.15}s` }} />
-              <span className="text-slate-300">{step}</span>
+              <span className="w-5 h-5 rounded-full border-2 border-[var(--accent-cyan)] border-t-transparent animate-spin flex-shrink-0" style={{ animationDelay: `${i * 0.15}s` }} />
+              <span className="text-[var(--text-secondary)]">{step}</span>
             </div>
           ))}
         </div>
@@ -106,25 +101,25 @@ function ErrorView({ error, onRetry }) {
   const Icon = isConfig ? Settings2 : AlertTriangle
   return (
     <div
-      className="rounded-xl border border-red-300 bg-red-50 overflow-hidden"
+      className="rounded-xl border border-[rgba(239,68,68,0.5)] bg-[var(--bg-card)] backdrop-blur-[14px] overflow-hidden shadow-[0_0_26px_rgba(239,68,68,0.12)]"
       data-testid="ai-analysis-error"
       role="alert"
     >
+      <PanelHeader
+        subtitle={isConfig ? 'Configuration required' : 'AI analysis unavailable'}
+        badge={<span className="pill pill-rejected flex-shrink-0">AI ERROR</span>}
+      />
       <div className="flex items-start gap-3 p-5">
-        <div className="w-10 h-10 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-5 h-5 text-red-600" />
+        <div className="w-10 h-10 rounded-lg bg-[var(--accent-red-dim)] border border-[rgba(239,68,68,0.45)] flex items-center justify-center flex-shrink-0">
+          <Icon className="w-5 h-5 text-[var(--accent-red)]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-red-500">AI Image Analysis</p>
-          <p className="font-semibold text-sm text-red-800">
-            {isConfig ? 'Configuration required' : 'AI analysis unavailable'}
-          </p>
-          <p className="text-sm text-red-700/90 mt-1.5">{error.message}</p>
+          <p className="text-sm text-[var(--text-secondary)]">{error.message}</p>
           {!isConfig && (
             <Button
               size="sm"
               variant="outline"
-              className="mt-3 border-red-300 text-red-700 hover:bg-red-100"
+              className="mt-3 border-[var(--accent-red)] text-[var(--accent-red)] hover:bg-[var(--accent-red-dim)]"
               onClick={onRetry}
             >
               <RefreshCw className="w-4 h-4 mr-1.5" />
@@ -138,57 +133,53 @@ function ErrorView({ error, onRetry }) {
 }
 
 function ResultBody({ result }) {
-  const sev = severityTone[result.severity] || severityTone.MEDIUM
   return (
     <div className="p-5 space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-3 rounded-lg bg-[var(--bg-card-hover)] border border-[var(--border-subtle)]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)] mb-1">Defect Detected</p>
-          <p className="font-semibold text-sm text-[var(--text-primary)] flex items-center gap-1.5">
-            <FileSearch className="w-4 h-4 text-[var(--accent-cyan)] flex-shrink-0" />
-            {result.defectType}
-          </p>
-        </div>
-
-        <div className="p-3 rounded-lg bg-[var(--bg-card-hover)] border border-[var(--border-subtle)]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)] mb-1">Confidence</p>
-          <p className={`text-2xl font-bold tabular-nums ${confidenceTextColor(result.confidence)}`}>
+      <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card-hover)] divide-y divide-[var(--border-subtle)]">
+        <Row label="Confidence">
+          <p className={`mono-num text-3xl font-bold leading-none ${confidenceTextColor(result.confidence)}`}>
             {result.confidence}%
           </p>
-          <div className="h-1.5 mt-1.5 rounded-full bg-slate-200 overflow-hidden">
+          <div className="h-2 mt-2 rounded-full bg-[var(--border-subtle)] overflow-hidden">
             <div
-              className={`h-full rounded-full bg-gradient-to-r ${confidenceColor(result.confidence)} transition-all duration-700`}
+              className={`h-full rounded-full bg-gradient-to-r ${confidenceColor(result.confidence)} shadow-[0_0_12px_rgba(34,211,238,0.45)] transition-all duration-700`}
               style={{ width: `${result.confidence}%` }}
             />
           </div>
-        </div>
+        </Row>
 
-        <div className="p-3 rounded-lg bg-[var(--bg-card-hover)] border border-[var(--border-subtle)]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)] mb-1">Severity</p>
+        <Row label="Severity">
           {result.isPothole && result.severity ? (
-            <span className={`inline-flex items-center gap-1.5 font-semibold text-sm px-2 py-1 rounded border ${sev.chip} ${sev.text}`}>
-              <span className={`w-2 h-2 rounded-full ${sev.dot}`} />
+            <span className={severityTone[result.severity] || severityTone.MEDIUM}>
               {result.severity}
             </span>
           ) : (
-            <span className="text-sm text-[var(--text-muted)]">—</span>
+            <span className="text-[var(--text-muted)]">—</span>
           )}
-        </div>
-      </div>
+        </Row>
 
-      <Field label="Description">
-        <p className="italic">"{result.description}"</p>
-      </Field>
+        <Row label="Description">
+          <p className="text-[var(--text-secondary)]">{result.description || '—'}</p>
+        </Row>
 
-      <Field label="Surroundings">
-        <p className="italic text-[var(--text-secondary)]">"{result.environment}"</p>
-      </Field>
+        <Row label="Environment">
+          <p className="text-[var(--text-secondary)]">{result.environment || '—'}</p>
+        </Row>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">Evidence Quality</span>
-        <span className={`text-xs font-bold px-2.5 py-1 rounded border ${evidenceTone[result.evidenceQuality] || evidenceTone.FAIR}`}>
-          {result.evidenceQuality}
-        </span>
+        <Row label="Evidence Quality">
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.12em] border ${evidenceTone[result.evidenceQuality] || evidenceTone.FAIR}`}>
+            {result.evidenceQuality}
+          </span>
+        </Row>
+
+        {result.defectType && (
+          <Row label="Defect">
+            <span className="inline-flex items-center gap-1.5 font-medium text-[var(--accent-cyan)]">
+              <FileSearch className="w-4 h-4 flex-shrink-0" />
+              {result.defectType}
+            </span>
+          </Row>
+        )}
       </div>
 
       <p className="text-xs text-[var(--text-muted)] flex items-start gap-1.5 pt-1 border-t border-[var(--border-subtle)]">
@@ -201,23 +192,25 @@ function ResultBody({ result }) {
 
 function AcceptedView({ result }) {
   return (
-    <div className="rounded-xl border border-emerald-300 bg-white overflow-hidden shadow-sm" data-testid="ai-analysis-accepted">
+    <div
+      className="rounded-xl border border-[rgba(16,185,129,0.45)] bg-[var(--bg-card)] backdrop-blur-[14px] overflow-hidden shadow-[0_0_28px_rgba(16,185,129,0.14)]"
+      data-testid="ai-analysis-accepted"
+    >
       <PanelHeader
-        icon={CheckCircle2}
         subtitle="Pothole detected — evidence accepted"
-        title={
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-emerald-600 text-white flex-shrink-0">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            Accepted
+        badge={
+          <span className="pill pill-verified flex-shrink-0">
+            <CheckCircle2 className="w-3 h-3" />
+            ACCEPTED
           </span>
         }
-        tone={{
-          header: 'bg-gradient-to-r from-emerald-50 to-white border-emerald-200',
-          iconBg: 'bg-emerald-100 border border-emerald-200',
-          icon: 'text-emerald-600',
-          title: 'text-emerald-800'
-        }}
       />
+      <div className="px-5 pt-5">
+        <p className="flex items-center gap-2.5 text-base font-bold uppercase tracking-[0.14em] text-[var(--accent-green)] text-glow-cyan">
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent-green)] shadow-[0_0_12px_3px_rgba(16,185,129,0.7)] flex-shrink-0" />
+          POTHOLE DETECTED
+        </p>
+      </div>
       <ResultBody result={result} />
     </div>
   )
@@ -226,61 +219,43 @@ function AcceptedView({ result }) {
 function NoPotholeView({ result }) {
   const invalid = result.evidenceStatus === 'INVALID_EVIDENCE'
   const Icon = invalid ? XCircle : Clock3
+  const accent = invalid ? 'text-[var(--accent-red)]' : 'text-[var(--accent-amber)]'
+  const panel = invalid
+    ? 'border-[rgba(239,68,68,0.5)] shadow-[0_0_28px_rgba(239,68,68,0.14)]'
+    : 'border-[rgba(245,158,11,0.5)] shadow-[0_0_28px_rgba(245,158,11,0.12)]'
+  const box = invalid
+    ? 'bg-[var(--accent-red-dim)] border-[rgba(239,68,68,0.45)]'
+    : 'bg-[var(--accent-amber-dim)] border-[rgba(245,158,11,0.45)]'
+  const glow = invalid ? 'rgba(239,68,68,0.55)' : 'rgba(245,158,11,0.5)'
+
   return (
     <div
-      className={`rounded-xl border overflow-hidden shadow-sm ${invalid ? 'border-red-300 bg-white' : 'border-amber-300 bg-white'}`}
+      className={`rounded-xl border ${panel} bg-[var(--bg-card)] backdrop-blur-[14px] overflow-hidden`}
       data-testid={invalid ? 'ai-analysis-invalid' : 'ai-analysis-review'}
     >
       <PanelHeader
-        icon={Icon}
         subtitle={invalid ? 'Image does not show a road defect' : 'Uncertain result — officer review recommended'}
-        title={
-          <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border flex-shrink-0 ${invalid ? 'bg-red-600 text-white border-red-600' : 'bg-amber-500 text-white border-amber-500'}`}>
-            {invalid ? 'Invalid Evidence' : 'Manual Review'}
+        badge={
+          <span className={`${invalid ? 'pill pill-rejected' : 'pill pill-review'} flex-shrink-0`}>
+            {invalid ? 'INVALID EVIDENCE' : 'MANUAL REVIEW'}
           </span>
         }
-        tone={invalid
-          ? {
-              header: 'bg-gradient-to-r from-red-50 to-white border-red-200',
-              iconBg: 'bg-red-100 border border-red-200',
-              icon: 'text-red-600',
-              title: 'text-red-800'
-            }
-          : {
-              header: 'bg-gradient-to-r from-amber-50 to-white border-amber-200',
-              iconBg: 'bg-amber-100 border border-amber-200',
-              icon: 'text-amber-600',
-              title: 'text-amber-800'
-            }}
       />
 
-      {invalid && (
-        <div className="px-5 pt-4">
-          <div className="flex items-start gap-2.5 p-3 rounded-lg bg-red-50 border border-red-200">
-            <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm text-red-800">⚠ No pothole detected</p>
-              <p className="text-sm text-red-700/90 mt-0.5">Status: <strong>INVALID EVIDENCE</strong> — this upload cannot be submitted as a pothole report.</p>
-            </div>
+      <div className="px-5 pt-4">
+        <div className={`flex items-start gap-2.5 p-3 rounded-lg border ${box}`}>
+          <Icon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${accent}`} />
+          <div className="min-w-0">
+            <p className={`font-bold text-sm tracking-[0.1em] ${accent}`} style={{ textShadow: `0 0 16px ${glow}` }}>
+              {invalid ? '⚠ NO POTHOLE DETECTED' : 'Manual review required'}
+            </p>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              Status: <strong className={accent}>{invalid ? 'INVALID EVIDENCE' : 'MANUAL REVIEW'}</strong>
+              {' — '}
+              {invalid ? 'this upload cannot be submitted as a pothole report.' : 'an officer will confirm this evidence.'}
+            </p>
           </div>
         </div>
-      )}
-
-      {!invalid && (
-        <div className="px-5 pt-4">
-          <div className="flex items-start gap-2.5 p-3 rounded-lg bg-amber-50 border border-amber-200">
-            <Clock3 className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm text-amber-800">Manual review required</p>
-              <p className="text-sm text-amber-700/90 mt-0.5">Status: <strong>MANUAL REVIEW</strong> — an officer will confirm this evidence.</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="p-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)] mb-1.5">AI Analysis</p>
-        <p className="text-sm italic text-[var(--text-primary)] leading-relaxed">"{result.description}"</p>
       </div>
 
       <ResultBody result={result} />

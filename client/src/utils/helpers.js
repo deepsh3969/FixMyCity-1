@@ -32,10 +32,10 @@ export function formatRelativeTime(dateString) {
 
 export function getSeverityColor(severity) {
   const colors = {
-    low: 'text-emerald-800 bg-emerald-100 border border-emerald-300',
-    medium: 'text-amber-800 bg-amber-100 border border-amber-300',
-    high: 'text-orange-800 bg-orange-100 border border-orange-300',
-    critical: 'text-red-800 bg-red-100 border border-red-300'
+    low: 'text-emerald-300 bg-emerald-500/15 border border-emerald-500/40',
+    medium: 'text-amber-300 bg-amber-500/15 border border-amber-500/40',
+    high: 'text-orange-300 bg-orange-500/15 border border-orange-500/40',
+    critical: 'text-red-300 bg-red-500/15 border border-red-500/40'
   }
   return colors[severity] || colors.low
 }
@@ -53,20 +53,20 @@ export function getSeverityLabel(severity) {
 
 export function getStatusColor(status) {
   const colors = {
-    REPORTED: 'text-sky-800 bg-sky-100 border border-sky-300',
-    ASSIGNED: 'text-indigo-800 bg-indigo-100 border border-indigo-300',
-    UNDER_REPAIR: 'text-orange-800 bg-orange-100 border border-orange-300',
-    VERIFICATION: 'text-cyan-800 bg-cyan-100 border border-cyan-300',
-    VERIFIED: 'text-emerald-800 bg-emerald-100 border border-emerald-300',
-    MANUAL_REVIEW: 'text-amber-800 bg-amber-100 border border-amber-300',
-    REJECTED: 'text-red-800 bg-red-100 border border-red-300',
-    RESOLVED: 'text-slate-700 bg-slate-100 border border-slate-300'
+    REPORTED: 'text-cyan-300 bg-cyan-500/15 border border-cyan-500/40',
+    ASSIGNED: 'text-indigo-300 bg-indigo-500/15 border border-indigo-500/40',
+    UNDER_REPAIR: 'text-blue-300 bg-blue-500/15 border border-blue-500/40',
+    VERIFICATION: 'text-cyan-300 bg-cyan-500/15 border border-cyan-500/40',
+    VERIFIED: 'text-emerald-300 bg-emerald-500/15 border border-emerald-500/40',
+    MANUAL_REVIEW: 'text-amber-300 bg-amber-500/15 border border-amber-500/40',
+    REJECTED: 'text-red-300 bg-red-500/15 border border-red-500/40',
+    RESOLVED: 'text-slate-300 bg-slate-500/15 border border-slate-500/40'
   }
   return colors[status] || colors.REPORTED
 }
 
 export const IMAGE_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect fill="#1e293b" width="80" height="80"/><circle cx="40" cy="34" r="10" fill="#475569"/><path d="M20 58c0-8 9-14 20-14s20 6 20 14" fill="none" stroke="#475569" stroke-width="3"/></svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect fill="#0b1a2e" width="80" height="80"/><circle cx="40" cy="34" r="10" fill="#1e3a5f"/><path d="M20 58c0-8 9-14 20-14s20 6 20 14" fill="none" stroke="#1e3a5f" stroke-width="3"/></svg>'
 )
 
 export function getBadgeVariant(status) {
@@ -84,27 +84,27 @@ export function getStatusLabel(status) {
 
 export function getDecisionColor(decision) {
   const colors = {
-    VERIFIED: 'text-emerald-700',
-    MANUAL_REVIEW: 'text-amber-700',
-    REJECTED: 'text-red-700'
+    VERIFIED: 'text-emerald-300',
+    MANUAL_REVIEW: 'text-amber-300',
+    REJECTED: 'text-red-300'
   }
-  return colors[decision] || 'text-slate-500'
+  return colors[decision] || 'text-slate-400'
 }
 
 export function getConfidenceColor(confidence) {
   const colors = {
-    HIGH: 'text-emerald-700',
-    MEDIUM: 'text-amber-700',
-    LOW: 'text-red-700'
+    HIGH: 'text-emerald-300',
+    MEDIUM: 'text-amber-300',
+    LOW: 'text-red-300'
   }
-  return colors[confidence] || 'text-slate-500'
+  return colors[confidence] || 'text-slate-400'
 }
 
 export function getScoreColor(score, max) {
   const percentage = (score / max) * 100
-  if (percentage >= 80) return 'text-emerald-700'
-  if (percentage >= 60) return 'text-amber-700'
-  return 'text-red-700'
+  if (percentage >= 80) return 'text-emerald-300'
+  if (percentage >= 60) return 'text-amber-300'
+  return 'text-red-300'
 }
 
 export function getScoreBarColor(score, max) {

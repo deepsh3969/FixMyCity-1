@@ -6,12 +6,11 @@ import {
   formatRelativeTime, getStatusLabel, getSeverityBadgeVariant, getBadgeVariant, IMAGE_FALLBACK
 } from '../utils/helpers'
 import {
-  MapPin, AlertTriangle, Clock, CheckCircle, Users, TrendingUp, Search, Filter, ChevronRight, XCircle,
-  Settings, Building2, Hammer, Radio, Flame, ArrowUpRight, ClipboardList, BarChart3, Target, Loader2, AlertCircle,
-  Zap
+  MapPin, AlertTriangle, CheckCircle, Users, Search, Filter, ChevronRight, XCircle,
+  Settings, Hammer, Radio, Flame, ArrowUpRight, ClipboardList, Target, AlertCircle
 } from 'lucide-react'
 import {
-  Button, Card, CardContent, Badge, EmptyState, Select, Skeleton, SkeletonList, Spinner, Alert, Tabs, TabPanel
+  Button, Card, CardContent, Badge, EmptyState, Select, Skeleton, SkeletonList, Spinner, Alert, Tabs
 } from '../components/UI'
 import ComplaintMap from '../components/ComplaintMap'
 import ActivityFeed from '../components/ActivityFeed'
@@ -22,7 +21,7 @@ const statusOptions = ['REPORTED', 'ASSIGNED', 'UNDER_REPAIR', 'VERIFICATION', '
 const severityOptions = ['low', 'medium', 'high', 'critical']
 
 const viewConfig = {
-  dashboard: { title: 'Municipal Command Center', subtitle: 'REPORT → TRACK → REPAIR → AI VERIFY → PROVE', showStats: true },
+  dashboard: { title: 'Municipal Admin Dashboard', subtitle: 'Track your pothole complaints and repair progress across the city.', showStats: true },
   complaints: { title: 'All Complaints', subtitle: 'Search, filter, and manage every reported pothole', showStats: false },
   map: { title: 'City Map', subtitle: 'Live markers across Thane with status filters + demo heatmap', showStats: false },
   verification: {
@@ -39,36 +38,36 @@ const viewConfig = {
 
 const NAV_STATS = (stats) => [
   {
-    label: 'TOTAL', value: stats.totalComplaints, color: 'text-[var(--text-primary)]', bg: 'bg-[var(--accent-blue-dim)]',
-    icon: MapPin, iconColor: 'text-[var(--accent-blue)]'
+    label: 'Active Reports', value: stats.reported + stats.assigned + stats.underRepair + stats.verification,
+    color: 'text-[var(--accent-amber)]', bg: 'bg-[var(--accent-amber-dim)]', icon: Radio, iconColor: 'text-[var(--accent-amber)]'
   },
   {
-    label: 'ACTIVE', value: stats.reported + stats.assigned + stats.underRepair + stats.verification,
-    color: 'text-[var(--accent-amber)]', bg: 'bg-[var(--accent-amber-dim)]', icon: Clock, iconColor: 'text-[var(--accent-amber)]'
+    label: 'Assigned', value: stats.assigned, color: 'text-[var(--accent-purple)]', bg: 'bg-[var(--accent-purple-dim)]',
+    icon: Users, iconColor: 'text-[var(--accent-purple)]'
   },
   {
-    label: 'UNDER REPAIR', value: stats.underRepair, color: 'text-[var(--accent-amber)]', bg: 'bg-[var(--accent-amber-dim)]',
-    icon: Hammer, iconColor: 'text-[var(--accent-amber)]'
+    label: 'Under Repair', value: stats.underRepair, color: 'text-[var(--accent-blue)]', bg: 'bg-[var(--accent-blue-dim)]',
+    icon: Hammer, iconColor: 'text-[var(--accent-blue)]'
   },
   {
-    label: 'AWAITING VERIFICATION', value: stats.verification, color: 'text-[var(--accent-cyan)]', bg: 'bg-[var(--accent-cyan-dim)]',
+    label: 'Verification', value: stats.verification, color: 'text-[var(--accent-cyan)]', bg: 'bg-[var(--accent-cyan-dim)]',
     icon: Target, iconColor: 'text-[var(--accent-cyan)]'
   },
   {
-    label: 'VERIFIED', value: stats.verified, color: 'text-[var(--accent-green)]', bg: 'bg-[var(--accent-green-dim)]',
+    label: 'Verified', value: stats.verified, color: 'text-[var(--accent-green)]', bg: 'bg-[var(--accent-green-dim)]',
     icon: CheckCircle, iconColor: 'text-[var(--accent-green)]'
   },
   {
-    label: 'MANUAL REVIEW', value: stats.manualReview, color: 'text-[var(--accent-amber)]', bg: 'bg-[var(--accent-amber-dim)]',
+    label: 'Manual Review', value: stats.manualReview, color: 'text-[var(--accent-amber)]', bg: 'bg-[var(--accent-amber-dim)]',
     icon: AlertCircle, iconColor: 'text-[var(--accent-amber)]'
   },
   {
-    label: 'REJECTED', value: stats.rejected, color: 'text-[var(--accent-red)]', bg: 'bg-[var(--accent-red-dim)]',
+    label: 'Rejected', value: stats.rejected, color: 'text-[var(--accent-red)]', bg: 'bg-[var(--accent-red-dim)]',
     icon: XCircle, iconColor: 'text-[var(--accent-red)]'
   },
   {
-    label: 'RESOLVED', value: stats.resolved, color: 'text-[var(--text-secondary)]', bg: 'bg-[var(--border-subtle)]',
-    icon: CheckCircle, iconColor: 'text-[var(--text-secondary)]'
+    label: 'Resolved', value: stats.resolved, color: 'text-[var(--accent-green)]', bg: 'bg-[var(--accent-green-dim)]',
+    icon: ClipboardList, iconColor: 'text-[var(--accent-green)]'
   }
 ]
 
@@ -308,6 +307,7 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
 
   const showStatsGrid = config.showStats && stats && view === 'dashboard'
   const filteredForFeed = view === 'dashboard' || view === 'verification' ? mapComplaints.length ? mapComplaints : complaints : complaints
+  const activeMapComplaints = (mapComplaints.length ? mapComplaints : complaints).filter((c) => c.status !== 'RESOLVED' && c.status !== 'REJECTED')
   const verificationQueue = complaints
 
   return (
@@ -315,14 +315,14 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">{config.title}</h1>
+            <h1 className="text-2xl font-bold gradient-text">{config.title}</h1>
             {view === 'dashboard' && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-[var(--accent-cyan-dim)] text-[var(--accent-cyan)] border border-[var(--accent-cyan)]">
+              <span className="tech-label px-2 py-1 rounded bg-[var(--accent-cyan-dim)] text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/40">
                 Thane · TMC
               </span>
             )}
           </div>
-          <p className="text-[var(--text-muted)]">{config.subtitle}</p>
+          <p className="text-[var(--text-muted)] text-sm mt-1">{config.subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link to="/municipal/verification">
@@ -343,12 +343,12 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
               <Card key={s.label} hover className="border-[var(--border-subtle)]">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] leading-tight">{s.label}</span>
+                    <span className="panel-title text-[var(--text-muted)] leading-tight pr-1">{s.label}</span>
                     <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center flex-shrink-0`}>
                       <Icon className={`w-4 h-4 ${s.iconColor}`} />
                     </div>
                   </div>
-                  <p className={`text-2xl font-bold tabular-nums ${s.color}`}>{s.value}</p>
+                  <p className={`text-2xl font-bold mono-num ${s.color}`}>{s.value}</p>
                 </CardContent>
               </Card>
             )
@@ -356,67 +356,47 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
         </div>
       )}
 
+      {/* Row 1 (spec §16): Active Reports + Map | Analytics bar graph */}
+      {view === 'dashboard' && stats && (
+        <div className="grid lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 min-w-0">
+            <Card className="border-[var(--border-subtle)] h-full">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="panel-title flex items-center gap-2 text-[var(--text-primary)]"><MapPin className="w-4 h-4 text-[var(--accent-cyan)]" /> Active Reports</h3>
+                  <Link to="/municipal/map" className="text-xs text-[var(--accent-cyan)] font-medium inline-flex items-center gap-1 hover:text-cyan-300">
+                    Full map <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+                <ComplaintMap complaints={activeMapComplaints} height={360} heatmap heatmapLabels={['Majiwada', 'Naupada', 'Pokhran', 'Kolshet']} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="min-w-0">
+            <AnalyticsPanel stats={stats} complaints={complaints} compact />
+          </div>
+        </div>
+      )}
+
       {/* Dashboard extras: verification lab cases + feed */}
       {view === 'dashboard' && (
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 space-y-6 min-w-0">
             <VerificationLabCases compact />
           </div>
-          <div>
+          <div className="min-w-0">
             <ActivityFeed complaints={filteredForFeed} />
           </div>
         </div>
       )}
 
       {view === 'verification' && (
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+        <div className="grid lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 min-w-0">
             <VerificationLabCases />
           </div>
-          <div>
+          <div className="min-w-0">
             <ActivityFeed complaints={filteredForFeed} limit={6} />
-          </div>
-        </div>
-      )}
-
-      {view === 'dashboard' && stats && (
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Card className="border-[var(--border-subtle)] h-full">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold flex items-center gap-2"><MapPin className="w-4 h-4 text-[var(--accent-cyan)]" /> City overview</h3>
-                  <Link to="/municipal/map" className="text-xs text-[var(--accent-cyan)] font-medium inline-flex items-center gap-1">
-                    Full map <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-                <ComplaintMap complaints={mapComplaints.length ? mapComplaints : complaints} height={340} heatmap heatmapLabels={['Majiwada', 'Naupada', 'Pokhran', 'Kolshet']} />
-              </CardContent>
-            </Card>
-          </div>
-          <div>
-            <Card className="border-[var(--border-subtle)] h-full">
-              <CardContent className="p-4 space-y-3">
-                <h3 className="font-semibold flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[var(--accent-cyan)]" /> Verified rate</h3>
-                <p className="text-4xl font-bold text-[var(--accent-green)]">{stats.verificationStats?.verifiedRate || 0}%</p>
-                <p className="text-sm text-[var(--text-muted)]">
-                  {stats.verificationStats?.verified || 0} verified · {stats.verificationStats?.manualReview || 0} manual · {stats.verificationStats?.rejected || 0} rejected
-                </p>
-                <div className="h-2.5 bg-[var(--border-subtle)] rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-[var(--accent-green)] to-[var(--accent-cyan)] rounded-full transition-all"
-                    style={{ width: `${stats.verificationStats?.verifiedRate || 0}%` }} />
-                </div>
-                <div className="pt-3 border-t border-[var(--border-subtle)] text-sm text-[var(--text-muted)]">
-                  <p className="flex justify-between"><span>Avg resolution</span>
-                    <strong>{stats.avgResolutionTimeMs ? `${Math.round(stats.avgResolutionTimeMs / 3600000)}h` : '—'}</strong></p>
-                  <p className="flex justify-between mt-1"><span>Saved for demo (DEMO)</span>
-                    <Badge variant="primary">Illustrative</Badge></p>
-                </div>
-                <Link to="/municipal/analytics" className="inline-flex">
-                  <Button variant="outline" size="sm" className="w-full">Open Analytics</Button>
-                </Link>
-              </CardContent>
-            </Card>
           </div>
         </div>
       )}
@@ -438,14 +418,27 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
       )}
 
       {/* Filters (non-map, non-verification-queue-only) */}
-      <MapFilters filters={filters} setFilters={setFilters} statusOptions={statusOptions} severityOptions={severityOptions} />
+      <MapFilters filters={filters} setFilters={setFilters} statusOptions={statusOptions} severityOptions={severityOptions} hideStatus={view === 'dashboard'} />
 
       {/* Complaints Table */}
       <Card className="border-[var(--border-subtle)]">
         <div className="px-5 py-3.5 border-b border-[var(--border-subtle)] flex items-center justify-between">
-          <h3 className="font-semibold text-sm text-[var(--text-primary)]">Complaints</h3>
-          <span className="text-xs text-[var(--text-muted)]">{pagination.total} total</span>
+          <h3 className="panel-title text-[var(--text-primary)]">Complaints</h3>
+          <span className="tech-label text-[var(--text-muted)]">{pagination.total} total</span>
         </div>
+        {view === 'dashboard' && (
+          <div className="px-5 py-3 border-b border-[var(--border-subtle)] overflow-x-auto">
+            <Tabs
+              className="min-w-[680px]"
+              tabs={[{ id: '', label: 'All' }, ...statusOptions.map((s) => ({ id: s, label: getStatusLabel(s) }))]}
+              activeTab={filters.status}
+              onChange={(id) => {
+                setFilters((prev) => ({ ...prev, status: id }))
+                setPagination((prev) => ({ ...prev, page: 1 }))
+              }}
+            />
+          </div>
+        )}
         {loading && !initialLoaded ? (
           <SkeletonList rows={5} />
         ) : error ? (
@@ -467,23 +460,23 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[var(--border-subtle)] text-left text-sm text-[var(--text-muted)]">
-                  <th className="pb-3 px-4 font-medium">ID</th>
-                  <th className="pb-3 px-4 font-medium">Title</th>
-                  <th className="pb-3 px-4 font-medium hidden md:table-cell">Citizen</th>
-                  <th className="pb-3 px-4 font-medium hidden xl:table-cell">Authority</th>
-                  <th className="pb-3 px-4 font-medium">Severity</th>
-                  <th className="pb-3 px-4 font-medium">Status</th>
-                  <th className="pb-3 px-4 font-medium hidden lg:table-cell">Assigned</th>
-                  <th className="pb-3 px-4 font-medium hidden lg:table-cell">Verification</th>
-                  <th className="pb-3 px-4 font-medium">Date</th>
-                  <th className="pb-3 px-4 font-medium">Actions</th>
+                  <th className="pb-3 px-3 font-medium">ID</th>
+                  <th className="pb-3 px-3 font-medium">Title</th>
+                  <th className="pb-3 px-3 font-medium hidden md:table-cell">Citizen</th>
+                  <th className="pb-3 px-3 font-medium hidden xl:table-cell">Authority</th>
+                  <th className="pb-3 px-3 font-medium">Severity</th>
+                  <th className="pb-3 px-3 font-medium">Status</th>
+                  <th className="pb-3 px-3 font-medium hidden lg:table-cell">Assigned</th>
+                  <th className="pb-3 px-3 font-medium hidden lg:table-cell">Verification</th>
+                  <th className="pb-3 px-3 font-medium">Date</th>
+                  <th className="pb-3 px-3 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
                 {complaints.map((complaint) => (
                   <tr key={complaint._id} className="hover:bg-[var(--bg-card-hover)] transition-all duration-200">
-                    <td className="py-4 px-4 font-mono text-sm text-[var(--text-primary)]">{complaint.complaintId}</td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-3 font-mono text-sm text-[var(--text-primary)]">{complaint.complaintId}</td>
+                    <td className="py-4 px-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-md overflow-hidden bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] flex-shrink-0">
                           <img
@@ -498,22 +491,22 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
                         </Link>
                       </div>
                     </td>
-                    <td className="py-4 px-4 hidden md:table-cell text-[var(--text-muted)]">{complaint.citizenId?.name || 'Unknown'}</td>
-                    <td className="py-4 px-4 hidden xl:table-cell text-xs text-[var(--accent-cyan)]">{complaint.assignedAuthority || 'TMC'}</td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-3 hidden md:table-cell text-[var(--text-muted)]">{complaint.citizenId?.name || 'Unknown'}</td>
+                    <td className="py-4 px-3 hidden xl:table-cell text-xs text-[var(--accent-cyan)]">{complaint.assignedAuthority || 'TMC'}</td>
+                    <td className="py-4 px-3">
                       <Badge variant={getSeverityBadgeVariant(complaint.severity)} className="capitalize">{complaint.severity}</Badge>
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-3">
                       <Badge variant={getBadgeVariant(complaint.status)}>{getStatusLabel(complaint.status)}</Badge>
                     </td>
-                    <td className="py-4 px-4 hidden lg:table-cell">
+                    <td className="py-4 px-3 hidden lg:table-cell">
                       {complaint.contractorId ? (
                         <span className="text-[var(--accent-cyan)]">{complaint.contractorId.name}</span>
                       ) : (
                         <span className="text-[var(--text-muted)]">Unassigned</span>
                       )}
                     </td>
-                    <td className="py-4 px-4 hidden lg:table-cell">
+                    <td className="py-4 px-3 hidden lg:table-cell">
                       {complaint.verificationResultId ? (
                         <Badge variant={complaint.verificationResultId.decision === 'VERIFIED' ? 'success' : complaint.verificationResultId.decision === 'MANUAL_REVIEW' ? 'warning' : 'danger'}>
                           {complaint.verificationResultId.decision} ({complaint.verificationResultId.totalScore})
@@ -522,8 +515,8 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
                         <span className="text-[var(--text-muted)]">Pending</span>
                       )}
                     </td>
-                    <td className="py-4 px-4 text-sm text-[var(--text-muted)]">{formatRelativeTime(complaint.createdAt)}</td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-3 text-sm text-[var(--text-muted)]">{formatRelativeTime(complaint.createdAt)}</td>
+                    <td className="py-4 px-3">
                       <div className="flex items-center gap-2">
                         <Link to={`/municipal/complaint/${complaint._id}`}>
                           <Button variant="ghost" size="sm"><ChevronRight className="w-4 h-4" /></Button>
@@ -557,8 +550,8 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
 
       {/* Assign modal */}
       {showAssignmentModal && selectedComplaint && (
-        <div className="fixed inset-0 z-[var(--z-floating)] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl shadow-xl p-6 space-y-4">
+        <div className="fixed inset-0 z-[var(--z-floating)] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="w-full max-w-md bg-[var(--bg-card)] border border-[var(--accent-cyan)]/25 rounded-xl shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 space-y-4">
             <div>
               <h2 className="text-lg font-semibold text-[var(--text-primary)]">Assign Contractor</h2>
               <p className="text-sm text-[var(--text-muted)]">{selectedComplaint.complaintId} · {selectedComplaint.title}</p>
@@ -582,7 +575,7 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
   )
 }
 
-function MapFilters({ filters, setFilters, statusOptions, severityOptions }) {
+function MapFilters({ filters, setFilters, statusOptions, severityOptions, hideStatus = false }) {
   return (
     <Card className="border-[var(--border-subtle)]">
       <CardContent className="p-4">
@@ -597,13 +590,15 @@ function MapFilters({ filters, setFilters, statusOptions, severityOptions }) {
               className="w-full pl-10 pr-4 py-2.5 bg-[var(--bg-card-hover)] border border-[var(--border-default)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-cyan)]"
             />
           </div>
-          <Select
-            value={filters.status}
-            onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
-            options={statusOptions.map((s) => ({ value: s, label: getStatusLabel(s) }))}
-            placeholder="All Statuses"
-            className="sm:w-48"
-          />
+          {!hideStatus && (
+            <Select
+              value={filters.status}
+              onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
+              options={statusOptions.map((s) => ({ value: s, label: getStatusLabel(s) }))}
+              placeholder="All Statuses"
+              className="sm:w-48"
+            />
+          )}
           <Select
             value={filters.severity}
             onChange={(e) => setFilters((prev) => ({ ...prev, severity: e.target.value }))}

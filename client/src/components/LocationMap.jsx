@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 import { useMap, createCustomIcon } from '../utils/map'
 import { CoordsBadge } from './UI'
@@ -35,8 +35,8 @@ export default function LocationMap({
     const startLng = Number.isFinite(lng) ? lng : 72.9781
 
     const map = mapLib.map(containerRef.current).setView([startLat, startLng], zoom)
-    mapLib.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+    mapLib.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'
     }).addTo(map)
 
     const icon = createCustomIcon(mapLib, color, label)
@@ -80,7 +80,7 @@ export default function LocationMap({
     }
   }, [latitude, longitude, zoom])
 
-  // Secondary marker (e.g., repair location) — keyed on values so parent re-renders don't churn it
+  // Secondary marker (e.g., repair location) â€” keyed on values so parent re-renders don't churn it
   const secondaryKey =
     secondary && isValid(secondary.latitude, secondary.longitude)
       ? `${secondary.latitude}|${secondary.longitude}|${secondary.color || ''}|${secondary.label || ''}|${secondary.popup || ''}`

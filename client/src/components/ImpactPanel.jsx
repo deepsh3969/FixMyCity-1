@@ -25,11 +25,11 @@ export default function ImpactPanel({ stats }) {
   return (
     <Card className="border-[var(--accent-cyan)]/30 overflow-hidden">
       <div className="px-5 py-3.5 border-b border-[var(--accent-cyan)]/20 bg-gradient-to-r from-[var(--accent-cyan-dim)] to-[var(--accent-green-dim)] flex items-center justify-between gap-2">
-        <h3 className="font-semibold text-sm flex items-center gap-2 text-[var(--text-primary)]">
+        <h3 className="panel-title flex items-center gap-2 text-[var(--text-primary)]">
           <TrendingUp className="w-4 h-4 text-[var(--accent-cyan)]" />
           Your Impact
         </h3>
-        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--text-primary)] text-white">
+        <span className="tech-label px-2 py-0.5 rounded bg-[var(--accent-cyan)] text-[#031120]">
           Live data
         </span>
       </div>

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { contractorAPI } from '../utils/api'
 import { formatDate, formatRelativeTime, getSeverityColor, getStatusColor, getStatusLabel, getDecisionColor, getConfidenceColor, validateImageFile, createObjectURL, revokeObjectURL, getSeverityBadgeVariant, getBadgeVariant, IMAGE_FALLBACK } from '../utils/helpers'
 import { compressImage } from '../utils/image'
-import { MapPin, Calendar, AlertTriangle, Camera, CheckCircle, AlertCircle, XCircle, Loader2, Map, ChevronLeft, Play, Upload, Image, X, Check, Zap } from 'lucide-react'
+import { MapPin, Calendar, AlertTriangle, Camera, CheckCircle, AlertCircle, XCircle, Loader2, Map, ChevronLeft, Play, Upload, Image, X, Check, Zap, Activity } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, Badge, ProgressBar, Alert, Spinner, EmptyState, Modal, Input, CoordsBadge } from '../components/UI'
 import LocationMap, { LocationSummary } from '../components/LocationMap'
 import { describeLocation, reverseGeocode } from '../utils/geocode'
@@ -20,6 +20,23 @@ const statusTimeline = [
   { key: 'REJECTED', label: 'Rejected', icon: XCircle },
   { key: 'RESOLVED', label: 'Resolved', icon: CheckCircle }
 ]
+
+const statusPillClass = {
+  REPORTED: 'pill-reported',
+  ASSIGNED: 'pill-assigned',
+  UNDER_REPAIR: 'pill-repair',
+  VERIFICATION: 'pill-verification',
+  VERIFIED: 'pill-verified',
+  MANUAL_REVIEW: 'pill-review',
+  REJECTED: 'pill-rejected',
+  RESOLVED: 'pill-resolved'
+}
+
+const decisionPillClass = {
+  VERIFIED: 'pill-verified',
+  MANUAL_REVIEW: 'pill-review',
+  REJECTED: 'pill-rejected'
+}
 
 export default function ContractorComplaintDetail() {
   const { id } = useParams()
@@ -174,15 +191,17 @@ export default function ContractorComplaintDetail() {
           <Button variant="ghost" size="sm" onClick={() => navigate('/contractor/dashboard')}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
+          <span className="w-1 h-12 rounded-full bg-[var(--accent-cyan)] shadow-[0_0_14px_rgba(34,211,238,0.65)] flex-shrink-0" />
           <div>
+            <p className="tech-label mb-1">Assignment Brief</p>
             <div className="flex items-center gap-3 mb-1 flex-wrap">
-              <h1 className="text-2xl font-bold">{complaint.title}</h1>
-              <Badge variant={getBadgeVariant(complaint.status)}>
+              <h1 className="text-2xl font-bold text-[var(--text-primary)] text-glow-cyan">{complaint.title}</h1>
+              <span className={`pill ${statusPillClass[complaint.status] || 'pill-reported'}`}>
                 {getStatusLabel(complaint.status)}
-              </Badge>
+              </span>
               <Badge variant="primary">{complaint.assignedAuthority || 'TMC'}</Badge>
             </div>
-            <p className="text-slate-500 font-mono text-sm">{complaint.complaintId}</p>
+            <p className="text-[var(--text-muted)] font-mono mono-num text-sm">{complaint.complaintId}</p>
           </div>
         </div>
         
@@ -194,10 +213,13 @@ export default function ContractorComplaintDetail() {
       </div>
 
       {/* Timeline */}
-      <Card>
-        <CardHeader>
-          <h3 className="font-semibold">Evidence Audit Trail</h3>
-          <p className="text-xs text-slate-500 mt-1">Every action on this complaint, recorded with actor and timestamp</p>
+      <Card className="border-[var(--border-subtle)] overflow-hidden">
+        <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent">
+          <h3 className="panel-title text-[var(--accent-cyan)] flex items-center gap-2">
+            <Activity className="w-4 h-4" />
+            Evidence Audit Trail
+          </h3>
+          <p className="tech-label mt-1.5">Every action on this complaint, recorded with actor and timestamp</p>
         </CardHeader>
         <CardContent>
           <AuditTimeline
@@ -211,47 +233,47 @@ export default function ContractorComplaintDetail() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Original Evidence */}
-          <Card>
-            <CardHeader>
-              <h3 className="font-semibold flex items-center gap-2">
-                <Camera className="w-5 h-5" />
+          <Card className="border-[var(--border-subtle)] overflow-hidden">
+            <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent">
+              <h3 className="panel-title text-[var(--accent-cyan)] flex items-center gap-2">
+                <Camera className="w-4 h-4" />
                 Original Citizen Report
               </h3>
             </CardHeader>
             <CardContent className="p-6 pt-0">
               {complaint.imageUrl && (
-                <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-100 cursor-pointer" onClick={() => { setModalImage(complaint.imageUrl); setShowImageModal(true) }}>
+                <div className="relative aspect-video rounded-lg overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card-hover)] cursor-pointer" onClick={() => { setModalImage(complaint.imageUrl); setShowImageModal(true) }}>
                   <img
                     src={complaint.imageUrl}
                     alt="Original pothole photo"
                     className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = IMAGE_FALLBACK }}
                   />
-                  <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-lg text-sm text-slate-100">
+                  <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-lg text-sm text-white border border-[var(--border-subtle)]">
                     Click to enlarge
                   </div>
                 </div>
               )}
               <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-slate-500">Description</p>
-                  <p className="font-medium">{complaint.description}</p>
+                  <p className="tech-label mb-1">Description</p>
+                  <p className="font-medium text-[var(--text-primary)]">{complaint.description}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Reported</p>
-                  <p className="font-medium">{formatDate(complaint.reportedAt)}</p>
+                  <p className="tech-label mb-1">Reported</p>
+                  <p className="font-medium mono-num text-[var(--text-primary)]">{formatDate(complaint.reportedAt)}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Location</p>
-                  <p className="text-sm font-medium">
+                  <p className="tech-label mb-1">Location</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
                     📍 {describeLocation(complaint.latitude, complaint.longitude, complaint.address)}
                   </p>
                   <CoordsBadge latitude={complaint.latitude} longitude={complaint.longitude} showDetailsLabel className="mt-2" />
                 </div>
                 {complaint.citizenId && (
                   <div>
-                    <p className="text-slate-500">Reported by</p>
-                    <p className="font-medium">{complaint.citizenId.name}</p>
+                    <p className="tech-label mb-1">Reported by</p>
+                    <p className="font-medium text-[var(--text-primary)]">{complaint.citizenId.name}</p>
                   </div>
                 )}
               </div>
@@ -260,10 +282,10 @@ export default function ContractorComplaintDetail() {
 
           {/* Repair Evidence / Submission Form */}
           {showRepairForm ? (
-            <Card className="border-cyan-500/30 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5">
-              <CardHeader>
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Upload className="w-5 h-5 text-cyan-600" />
+            <Card className="border-[rgba(34,211,238,0.35)] bg-gradient-to-br from-[var(--accent-cyan-dim)] via-transparent to-[var(--accent-purple-dim)] overflow-hidden glow-cyan">
+              <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent">
+                <h3 className="panel-title text-[var(--accent-cyan)] flex items-center gap-2">
+                  <Upload className="w-4 h-4" />
                   Submit Repair Evidence
                 </h3>
               </CardHeader>
@@ -277,7 +299,7 @@ export default function ContractorComplaintDetail() {
 
                   {/* After Photo */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">After-Repair Photo</label>
+                    <label className="tech-label block mb-2">After-Repair Photo</label>
                     <div className="relative">
                       <input
                         type="file"
@@ -290,37 +312,37 @@ export default function ContractorComplaintDetail() {
                       <label 
                         htmlFor="repair-image-upload"
                         className={`cursor-pointer block p-6 border-2 border-dashed rounded-xl transition-all ${
-                          repairPreview ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-slate-300 hover:border-cyan-500/50'
+                          repairPreview ? 'border-[rgba(34,211,238,0.6)] bg-[var(--accent-cyan-dim)]' : 'border-[var(--border-subtle)] bg-[var(--bg-card-solid)] hover:border-[rgba(34,211,238,0.5)] hover:bg-[var(--bg-card-hover)]'
                         }`}
                       >
                         {repairPreview ? (
                           <div className="relative">
-                            <img src={repairPreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                            <img src={repairPreview} alt="Preview" className="max-h-48 mx-auto rounded-lg border border-[var(--border-subtle)]" />
                             <button
                               type="button"
                               onClick={removeRepairImage}
-                              className="absolute top-2 right-2 p-1.5 bg-red-500/80 text-white rounded-full hover:bg-red-500 transition-colors"
+                              className="absolute top-2 right-2 p-1.5 bg-[rgba(239,68,68,0.85)] text-white rounded-full hover:bg-[var(--accent-red)] transition-colors border border-[rgba(239,68,68,0.5)]"
                             >
                               <X className="w-4 h-4" />
                             </button>
                           </div>
                         ) : (
                           <div className="flex flex-col items-center gap-3 text-center">
-                            <Image className="w-10 h-10 text-slate-500" />
+                            <Image className="w-10 h-10 text-[var(--accent-cyan)]" />
                             <div>
-                              <p className="font-medium">Click or drag to upload after-repair photo</p>
-                              <p className="text-sm text-slate-500">JPEG, PNG, WebP up to 10MB</p>
+                              <p className="font-medium text-[var(--text-primary)]">Click or drag to upload after-repair photo</p>
+                              <p className="tech-label mt-1">JPEG, PNG, WebP up to 10MB</p>
                             </div>
                           </div>
                         )}
                       </label>
                     </div>
-                    {repairImageError && <p className="mt-2 text-sm text-red-600">{repairImageError}</p>}
+                    {repairImageError && <p className="mt-2 text-sm text-[var(--accent-red)]">{repairImageError}</p>}
                   </div>
 
                   {/* GPS Location */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Repair GPS Location</label>
+                    <label className="tech-label block mb-2">Repair GPS Location</label>
                     <div className="mb-3">
                       <LocationMap
                         latitude={repairLatitude || complaint.latitude}
@@ -385,7 +407,7 @@ export default function ContractorComplaintDetail() {
                   />
 
                   {/* Submit Button */}
-                  <div className="pt-4 border-t border-slate-200 flex gap-4">
+                  <div className="pt-4 border-t border-[var(--border-subtle)] flex gap-4">
                     <Button type="button" variant="outline" onClick={() => navigate('/contractor/dashboard')} className="flex-1">
                       Cancel
                     </Button>
@@ -398,71 +420,71 @@ export default function ContractorComplaintDetail() {
               </CardContent>
             </Card>
           ) : complaint.repairSubmissionId ? (
-            <Card>
-              <CardHeader>
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
+            <Card className="border-[var(--border-subtle)] overflow-hidden">
+              <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-blue-dim)] via-transparent to-transparent">
+                <h3 className="panel-title text-[var(--accent-blue)] flex items-center gap-2">
+                  <Camera className="w-4 h-4" />
                   Your Repair Submission
                 </h3>
               </CardHeader>
               <CardContent className="p-6 pt-0">
                 {complaint.repairSubmissionId.imageUrl && (
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-100 cursor-pointer" onClick={() => { setModalImage(complaint.repairSubmissionId.imageUrl); setShowImageModal(true) }}>
+                  <div className="relative aspect-video rounded-lg overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card-hover)] cursor-pointer" onClick={() => { setModalImage(complaint.repairSubmissionId.imageUrl); setShowImageModal(true) }}>
                     <img
                       src={complaint.repairSubmissionId.imageUrl}
                       alt="Repair photo"
                       className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                       onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = IMAGE_FALLBACK }}
                     />
-                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-lg text-sm text-slate-100">
+                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-lg text-sm text-white border border-[var(--border-subtle)]">
                       Click to enlarge
                     </div>
                   </div>
                 )}
                 <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-slate-500">Submitted</p>
-                    <p className="font-medium">{formatDate(complaint.repairSubmissionId.submittedAt)}</p>
+                    <p className="tech-label mb-1">Submitted</p>
+                    <p className="font-medium mono-num text-[var(--text-primary)]">{formatDate(complaint.repairSubmissionId.submittedAt)}</p>
                   </div>
                 <div>
-                  <p className="text-slate-500 text-sm">Status</p>
+                  <p className="tech-label mb-1">Status</p>
                   <Badge variant={getBadgeVariant(complaint.repairSubmissionId.status)}>
                     {getStatusLabel(complaint.repairSubmissionId.status)}
                   </Badge>
                 </div>
                   <div>
-                    <p className="text-slate-500">Repair Location</p>
-                    <p className="text-sm font-medium">
+                    <p className="tech-label mb-1">Repair Location</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">
                       📍 {describeLocation(complaint.repairSubmissionId.latitude, complaint.repairSubmissionId.longitude, complaint.address)}
                     </p>
                     <CoordsBadge latitude={complaint.repairSubmissionId.latitude} longitude={complaint.repairSubmissionId.longitude} showDetailsLabel className="mt-2" />
                   </div>
                   <div>
-                    <p className="text-slate-500">Distance from Original</p>
+                    <p className="tech-label mb-1">Distance from Original</p>
                     {complaint.verificationResultId && (
-                      <p className="font-mono text-xs">{complaint.verificationResultId.distanceMeters.toFixed(1)}m</p>
+                      <p className="mono-num font-semibold text-[var(--accent-cyan)] text-xs">{complaint.verificationResultId.distanceMeters.toFixed(1)}m</p>
                     )}
                   </div>
                   {complaint.repairSubmissionId.notes && (
                     <div className="col-span-2">
-                      <p className="text-slate-500">Notes</p>
-                      <p className="font-medium">{complaint.repairSubmissionId.notes}</p>
+                      <p className="tech-label mb-1">Notes</p>
+                      <p className="font-medium text-[var(--text-primary)]">{complaint.repairSubmissionId.notes}</p>
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
           ) : complaint.status === 'ASSIGNED' ? (
-            <Card>
-              <CardHeader>
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Play className="w-5 h-5 text-green-600" />
+            <Card className="border-[rgba(16,185,129,0.35)] overflow-hidden">
+              <CardHeader className="border-b border-[rgba(16,185,129,0.2)] bg-gradient-to-r from-[var(--accent-green-dim)] via-transparent to-transparent">
+                <h3 className="panel-title text-[var(--accent-green)] flex items-center gap-2">
+                  <Play className="w-4 h-4" />
                   Start Repair
                 </h3>
               </CardHeader>
               <CardContent className="p-6 pt-0 text-center py-8">
-                <p className="text-slate-500 mb-6">You've been assigned to this repair. When you begin work, mark it as started.</p>
-                <Button onClick={handleStartRepair} size="lg" className="w-full sm:w-auto">
+                <p className="text-sm text-[var(--text-secondary)] mb-6">You've been assigned to this repair. When you begin work, mark it as started.</p>
+                <Button onClick={handleStartRepair} size="lg" className="w-full sm:w-auto btn-glow">
                   <Play className="w-5 h-5" />
                   Start Repair
                 </Button>
@@ -476,10 +498,10 @@ export default function ContractorComplaintDetail() {
           )}
 
           {/* Location Map */}
-          <Card>
-            <CardHeader>
-              <h3 className="font-semibold flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
+          <Card className="border-[var(--border-subtle)] overflow-hidden">
+            <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent">
+              <h3 className="panel-title text-[var(--accent-cyan)] flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
                 Location
               </h3>
             </CardHeader>
@@ -505,15 +527,15 @@ export default function ContractorComplaintDetail() {
                 zoom={16}
                 showMyLocation={false}
               />
-              <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--text-muted)]">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: getStatusMarkerColor(complaint.status) }} />
-                  Reported
+                  <span className="w-2.5 h-2.5 rounded-full marker-pulse" style={{ background: getStatusMarkerColor(complaint.status) }} />
+                  <span className="tech-label">Reported</span>
                 </span>
                 {complaint.repairSubmissionId && (
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-600" />
-                    Repair
+                    <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent-cyan)]" />
+                    <span className="tech-label">Repair</span>
                   </span>
                 )}
               </div>
@@ -523,76 +545,76 @@ export default function ContractorComplaintDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <h3 className="font-semibold">Assignment Details</h3>
+          <Card className="border-[var(--border-subtle)] overflow-hidden">
+            <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent">
+              <h3 className="panel-title text-[var(--accent-cyan)]">Assignment Details</h3>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-slate-500 text-sm">Complaint ID</p>
-                <p className="font-mono text-lg">{complaint.complaintId}</p>
+                <p className="tech-label mb-1">Complaint ID</p>
+                <p className="font-mono mono-num text-lg text-[var(--text-primary)]">{complaint.complaintId}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-sm">Status</p>
-                <Badge variant={getBadgeVariant(complaint.status)} className="w-full justify-center py-2">
+                <p className="tech-label mb-1">Status</p>
+                <span className={`pill ${statusPillClass[complaint.status] || 'pill-reported'}`}>
                   {getStatusLabel(complaint.status)}
-                </Badge>
+                </span>
               </div>
               <div>
-                <p className="text-slate-500 text-sm">Severity</p>
-                <Badge variant={getSeverityBadgeVariant(complaint.severity)} className="w-full justify-center py-2 capitalize">
+                <p className="tech-label mb-1">Severity</p>
+                <Badge variant={getSeverityBadgeVariant(complaint.severity)} className="capitalize">
                   {complaint.severity}
                 </Badge>
               </div>
               <div>
-                <p className="text-slate-500 text-sm">Assigned</p>
-                <p className="font-medium">{formatRelativeTime(complaint.assignedAt || complaint.createdAt)}</p>
+                <p className="tech-label mb-1">Assigned</p>
+                <p className="font-medium mono-num text-[var(--text-primary)]">{formatRelativeTime(complaint.assignedAt || complaint.createdAt)}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-sm">Location</p>
-                <p className="text-sm font-medium">
+                <p className="tech-label mb-1">Location</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">
                   📍 {describeLocation(complaint.latitude, complaint.longitude, complaint.address)}
                 </p>
                 <CoordsBadge latitude={complaint.latitude} longitude={complaint.longitude} showDetailsLabel className="mt-2" />
               </div>
               <div>
-                <p className="text-slate-500 text-sm">Authority</p>
-                <p className="text-sm font-medium">{complaint.assignedAuthority || 'Thane Municipal Corporation (TMC)'}</p>
+                <p className="tech-label mb-1">Authority</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{complaint.assignedAuthority || 'Thane Municipal Corporation (TMC)'}</p>
               </div>
               {complaint.citizenId && (
-                <div className="p-3 bg-slate-100 rounded-lg">
-                  <p className="text-slate-500 text-sm">Reported by</p>
-                  <p className="font-medium">{complaint.citizenId.name}</p>
+                <div className="p-3 rounded-lg bg-[var(--accent-cyan-dim)] border border-[var(--border-subtle)]">
+                  <p className="tech-label mb-1">Reported by</p>
+                  <p className="font-medium text-[var(--text-primary)]">{complaint.citizenId.name}</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
           {complaint.verificationResultId && (
-            <Card>
-              <CardHeader>
-                <h3 className="font-semibold">Verification Summary</h3>
+            <Card className="border-[rgba(34,211,238,0.3)] overflow-hidden">
+              <CardHeader className="border-b border-[rgba(34,211,238,0.2)] bg-gradient-to-r from-[var(--accent-cyan-dim)] via-transparent to-transparent">
+                <h3 className="panel-title text-[var(--accent-cyan)]">Verification Summary</h3>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Decision</span>
-                  <Badge variant={complaint.verificationResultId.decision === 'VERIFIED' ? 'success' : complaint.verificationResultId.decision === 'MANUAL_REVIEW' ? 'warning' : 'danger'}>
+                <div className="flex justify-between items-center">
+                  <span className="tech-label">Decision</span>
+                  <span className={`pill ${decisionPillClass[complaint.verificationResultId.decision] || 'pill-verification'}`}>
                     {complaint.verificationResultId.decision}
-                  </Badge>
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Score</span>
-                  <span className="font-bold text-cyan-600">{complaint.verificationResultId.totalScore}/100</span>
+                <div className="flex justify-between items-center">
+                  <span className="tech-label">Score</span>
+                  <span className="text-xl font-bold mono-num text-[var(--accent-cyan)] text-glow-cyan">{complaint.verificationResultId.totalScore}/100</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Confidence</span>
+                <div className="flex justify-between items-center">
+                  <span className="tech-label">Confidence</span>
                   <Badge variant={complaint.verificationResultId.confidence === 'HIGH' ? 'success' : complaint.verificationResultId.confidence === 'MEDIUM' ? 'warning' : 'danger'}>
                     {complaint.verificationResultId.confidence}
                   </Badge>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">GPS Distance</span>
-                  <span className="font-medium">{complaint.verificationResultId.distanceMeters.toFixed(1)}m</span>
+                <div className="flex justify-between items-center">
+                  <span className="tech-label">GPS Distance</span>
+                  <span className="font-medium mono-num text-[var(--text-primary)]">{complaint.verificationResultId.distanceMeters.toFixed(1)}m</span>
                 </div>
               </CardContent>
             </Card>

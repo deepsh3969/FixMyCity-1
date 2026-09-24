@@ -10,7 +10,7 @@
 }
 
 .leaflet-popup-content-wrapper {
-  background: var(--bg-card);
+  background: var(--bg-card-solid);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   color: var(--text-primary);
@@ -18,17 +18,31 @@
 }
 
 .leaflet-popup-tip {
-  background: var(--bg-card);
+  background: var(--bg-card-solid);
   border: 1px solid var(--border-subtle);
 }
 
+.leaflet-popup-content {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.leaflet-popup-content a {
+  color: var(--accent-cyan);
+}
+
 .leaflet-control-attribution {
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--text-muted);
+  background: rgba(3, 7, 18, 0.75) !important;
+  color: var(--text-muted) !important;
+  font-size: 10px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--text-secondary) !important;
 }
 
 .leaflet-control-zoom a {
-  background: var(--bg-card) !important;
+  background: var(--bg-card-solid) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border-subtle) !important;
 }
@@ -38,9 +52,14 @@
 }
 
 .leaflet-control-layers {
-  background: var(--bg-card) !important;
+  background: var(--bg-card-solid) !important;
   border: 1px solid var(--border-subtle) !important;
   border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+}
+
+.leaflet-control-layers-base label {
+  color: var(--text-secondary) !important;
 }
 
 .chart-container {
@@ -51,7 +70,7 @@
 
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: var(--border-subtle) !important;
+  stroke: rgba(34, 211, 238, 0.12) !important;
 }
 
 .recharts-cartesian-axis-tick-value {
@@ -64,7 +83,7 @@
 }
 
 .recharts-default-tooltip {
-  background: var(--bg-card) !important;
+  background: var(--bg-card-solid) !important;
   border: 1px solid var(--border-subtle) !important;
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-lg) !important;
@@ -74,23 +93,66 @@
   color: var(--text-secondary) !important;
 }
 
-@media (max-width: 1024px) {
-  .lg\:static { position: static !important; }
-  .lg\:ml-0 { margin-left: 0 !important; }
-  .lg\:ml-8 { margin-left: 2rem !important; }
-  .lg\:ml-0 { margin-left: 0 !important; }
-  .lg\:flex { display: flex !important; }
-  .lg\:flex-1 { flex: 1 1 0% !important; }
-  .lg\:p-6 { padding: 1.5rem !important; }
-  .lg\:p-8 { padding: 2rem !important; }
-}
-
 @media (max-width: 768px) {
   .container { padding: 0 1rem !important; }
-  .lg\:p-6 { padding: 1rem !important; }
-  .lg\:p-8 { padding: 1.5rem !important; }
 }
 
 @media (max-width: 640px) {
   :root { --space-4: 12px; --space-6: 16px; }
 }
+
+/* ============================================================
+   COMMAND CENTER — remap of legacy light utility classes.
+   MUST stay AFTER @tailwind utilities so these win the cascade.
+   ============================================================ */
+.bg-white { background-color: var(--panel); }
+.bg-white\/50 { background-color: rgba(8, 20, 35, 0.6); }
+.bg-white\/80 { background-color: rgba(8, 20, 35, 0.85); }
+.bg-white\/90 { background-color: rgba(8, 20, 35, 0.9); }
+.bg-white\/95 { background-color: rgba(8, 20, 35, 0.95); }
+.hover\:bg-white:hover { background-color: var(--bg-card-hover); }
+
+.bg-slate-50 { background-color: var(--panel-2); }
+.bg-slate-100 { background-color: rgba(12, 29, 48, 0.6); }
+.bg-slate-200 { background-color: rgba(34, 211, 238, 0.08); }
+.hover\:bg-slate-50:hover { background-color: rgba(12, 29, 48, 0.7); }
+.hover\:bg-slate-100:hover { background-color: rgba(16, 36, 58, 0.9); }
+
+.text-slate-900 { color: var(--text-primary); }
+.text-slate-700 { color: var(--text-secondary); }
+.text-slate-600 { color: var(--text-secondary); }
+.text-slate-500 { color: var(--text-muted); }
+.text-slate-400 { color: var(--text-muted); }
+.hover\:text-slate-900:hover { color: var(--text-primary); }
+
+.border-slate-200 { border-color: var(--border-subtle); }
+.border-slate-300 { border-color: var(--border-default); }
+.hover\:border-slate-300:hover { border-color: var(--border-default); }
+
+.bg-cyan-50 { background-color: var(--accent-cyan-dim); }
+.text-cyan-600 { color: var(--accent-cyan); }
+.text-cyan-700 { color: var(--accent-cyan); }
+.text-cyan-300 { color: #67E8F9; }
+.hover\:text-cyan-700:hover,
+.group-hover\:text-cyan-700:hover,
+.group:hover .group-hover\:text-cyan-700 { color: var(--accent-cyan); }
+.group:hover .group-hover\:text-cyan-600 { color: var(--accent-cyan); }
+
+.text-green-600 { color: var(--accent-green); }
+.text-green-700 { color: var(--accent-green); }
+.text-green-800 { color: #6EE7B7; }
+.text-emerald-700, .text-emerald-800 { color: #6EE7B7; }
+.text-amber-600, .text-amber-700, .text-amber-800 { color: #FBBF24; }
+.text-red-600, .text-red-700, .text-red-800 { color: #F87171; }
+.text-orange-800 { color: #FDBA74; }
+
+.bg-emerald-100 { background-color: rgba(16, 185, 129, 0.12); }
+.bg-amber-100 { background-color: rgba(245, 158, 11, 0.12); }
+.bg-red-50, .bg-red-100 { background-color: rgba(239, 68, 68, 0.12); }
+.bg-orange-100 { background-color: rgba(249, 115, 22, 0.12); }
+.bg-cyan-100 { background-color: rgba(34, 211, 238, 0.12); }
+.bg-sky-100 { background-color: rgba(56, 189, 248, 0.12); }
+.bg-indigo-100 { background-color: rgba(129, 140, 248, 0.12); }
+.bg-slate-100 { background-color: rgba(12, 29, 48, 0.6); }
+.hover\:bg-red-50:hover { background-color: rgba(239, 68, 68, 0.1); }
+.hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.18); }

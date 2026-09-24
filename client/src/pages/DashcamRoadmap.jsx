@@ -29,7 +29,17 @@ const PIPELINE = [
   { icon: Database, label: 'Pothole Event', sub: 'Create structured record' },
   { icon: GitMerge, label: 'Duplicate Check', sub: 'Cluster nearby detections' },
   { icon: Layers, label: 'Municipal GIS', sub: 'Plot on command map' },
-  { icon: Construction, label: 'Maintenance', sub: 'Feed repair workflow' }
+  { icon: Construction, label: 'Repair', sub: 'Feed repair workflow' }
+]
+
+const PIPELINE_CHAIN = [
+  'Dashcam',
+  'AI Detection',
+  'GPS',
+  'Pothole Event',
+  'Duplicate Check',
+  'Municipal GIS',
+  'Repair'
 ]
 
 const EVENT_SCHEMA = [
@@ -93,60 +103,94 @@ export default function DashcamRoadmap() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <BrandLogo variant="md" className="mt-1" />
-          <div>
-            <div className="flex items-center gap-3 mb-1 flex-wrap">
-              <h1 className="text-2xl font-bold text-slate-900">AI Road Monitoring</h1>
-              <Badge variant="warning">Coming Soon</Badge>
+      <div className="glass p-6 relative overflow-hidden animate-slide-up">
+        <div className="absolute -top-24 -left-24 w-56 h-56 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-56 h-56 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <BrandLogo variant="md" className="mt-1" />
+            <div>
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <p className="panel-title text-[var(--accent-cyan)]">Concept · Future Architecture</p>
+                <span
+                  className="pill pill-review uppercase"
+                  style={{ boxShadow: '0 0 20px rgba(245, 158, 11, 0.45)' }}
+                >
+                  Coming Soon
+                </span>
+              </div>
+              <h1 className="text-2xl font-bold gradient-text mb-2">AI Road Monitoring</h1>
+              <p className="text-sm text-[var(--text-secondary)] max-w-2xl">
+                Future: vehicles become mobile road-condition sensors — automatically detecting potholes
+                and feeding them into the municipal infrastructure system.
+              </p>
             </div>
-            <p className="text-slate-500 text-sm max-w-2xl">
-              Future: vehicles become mobile road-condition sensors — automatically detecting potholes
-              and feeding them into the municipal infrastructure system.
-            </p>
+          </div>
+        </div>
+
+        {/* Concept pipeline chain */}
+        <div className="relative mt-5 pt-4 border-t border-[var(--border-subtle)]">
+          <p className="tech-label mb-2">Concept Pipeline — Not Implemented</p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px] font-mono uppercase tracking-[0.14em]">
+            {PIPELINE_CHAIN.map((step, i) => (
+              <span key={step} className="inline-flex items-center gap-2">
+                <span className="text-[var(--text-secondary)]">{step}</span>
+                {i < PIPELINE_CHAIN.length - 1 && (
+                  <span
+                    className="flow-arrow"
+                    style={{
+                      color: i % 2 === 0 ? 'var(--accent-cyan)' : 'var(--accent-purple)',
+                      textShadow: '0 0 10px currentColor'
+                    }}
+                  >
+                    →
+                  </span>
+                )}
+              </span>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Positioning */}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-slate-200 md:col-span-1">
+        <Card hover className="md:col-span-1">
           <CardContent className="p-5 space-y-4">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-600 mb-1">Problem</p>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                The problem isn&apos;t reporting potholes. The problem is <strong>proving they were fixed</strong>.
+              <p className="tech-label text-[var(--accent-cyan)] mb-1">Problem</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                The problem isn&apos;t reporting potholes. The problem is <strong className="text-[var(--text-primary)]">proving they were fixed</strong>.
               </p>
             </div>
-            <div className="h-px bg-slate-200" />
+            <div className="h-px bg-[var(--border-subtle)]" />
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-600 mb-1">Solution</p>
-              <p className="text-sm text-slate-700 leading-relaxed">
+              <p className="tech-label text-[var(--accent-cyan)] mb-1">Solution</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                 FixMyCity connects reporting, repair, AI verification and municipal accountability.
               </p>
             </div>
-            <div className="h-px bg-slate-200" />
+            <div className="h-px bg-[var(--border-subtle)]" />
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-600 mb-1">Core Innovation</p>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                We verify the <strong>location</strong>, not just the repair.
+              <p className="tech-label text-[var(--accent-cyan)] mb-1">Core Innovation</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                We verify the <strong className="text-[var(--text-primary)]">location</strong>, not just the repair.
               </p>
             </div>
-            <div className="h-px bg-slate-200" />
+            <div className="h-px bg-[var(--border-subtle)]" />
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-600 mb-1">Future</p>
-              <p className="text-sm text-slate-700 leading-relaxed">
+              <p className="tech-label text-[var(--accent-amber)] mb-1">Future</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                 With AI-enabled dashcams, every vehicle can become a road-condition sensor.
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 md:col-span-2">
-          <CardHeader className="border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900">Conceptual Pipeline</h3>
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <h3 className="panel-title text-[var(--accent-cyan)]">Conceptual Pipeline</h3>
               <Badge variant="warning">Conceptual — Not Implemented</Badge>
             </div>
           </CardHeader>
@@ -156,15 +200,21 @@ export default function DashcamRoadmap() {
                 const Icon = step.icon
                 return (
                   <div key={step.label} className="relative">
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 h-full">
-                      <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-2.5">
-                        <Icon className="w-5 h-5 text-cyan-600" />
+                    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-2)] p-3.5 h-full hover-lift">
+                      <div className="w-9 h-9 rounded-lg bg-[var(--accent-cyan-dim)] border border-[rgba(34,211,238,0.3)] flex items-center justify-center mb-2.5 glow-cyan">
+                        <Icon className="w-5 h-5 text-[var(--accent-cyan)]" />
                       </div>
-                      <p className="text-xs font-semibold text-slate-900 mb-0.5">{step.label}</p>
-                      <p className="text-[11px] text-slate-500 leading-snug">{step.sub}</p>
+                      <p className="text-xs font-semibold text-[var(--text-primary)] mb-0.5">{step.label}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-snug">{step.sub}</p>
                     </div>
                     {i < PIPELINE.length - 1 && i % 4 !== 3 && (
-                      <ArrowRight className="hidden sm:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                      <ArrowRight
+                        className="hidden sm:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                        style={{
+                          color: i % 2 === 0 ? 'var(--accent-cyan)' : 'var(--accent-purple)',
+                          filter: 'drop-shadow(0 0 6px currentColor)'
+                        }}
+                      />
                     )}
                   </div>
                 )
@@ -172,23 +222,23 @@ export default function DashcamRoadmap() {
             </div>
 
             <div className="mt-5 grid sm:grid-cols-2 gap-4">
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+              <div className="rounded-xl border border-[rgba(245,158,11,0.35)] bg-[var(--accent-amber-dim)] p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Car className="w-4 h-4 text-amber-600" />
-                  <p className="text-xs font-bold uppercase tracking-wide text-amber-600">Today</p>
+                  <Car className="w-4 h-4 text-[var(--accent-amber)]" />
+                  <p className="tech-label text-[var(--accent-amber)]">Today</p>
                 </div>
-                <p className="text-sm text-slate-700">Citizen reports potholes using a smartphone.</p>
+                <p className="text-sm text-[var(--text-secondary)]">Citizen reports potholes using a smartphone.</p>
               </div>
-              <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4">
+              <div className="rounded-xl border border-[rgba(34,211,238,0.35)] bg-[var(--accent-cyan-dim)] p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Signal className="w-4 h-4 text-cyan-600" />
-                  <p className="text-xs font-bold uppercase tracking-wide text-cyan-600">Future</p>
+                  <Signal className="w-4 h-4 text-[var(--accent-cyan)]" />
+                  <p className="tech-label text-[var(--accent-cyan)]">Future</p>
                 </div>
-                <p className="text-sm text-slate-700">Vehicles become mobile road sensors — continuously monitored roads.</p>
+                <p className="text-sm text-[var(--text-secondary)]">Vehicles become mobile road sensors — continuously monitored roads.</p>
               </div>
             </div>
 
-            <p className="mt-4 text-xs text-slate-500 italic">
+            <p className="mt-4 text-xs text-[var(--text-muted)] italic">
               From citizen-reported potholes to continuously monitored roads. Every vehicle can become a road-condition sensor.
             </p>
           </CardContent>
@@ -196,20 +246,20 @@ export default function DashcamRoadmap() {
       </div>
 
       {/* Event schema */}
-      <Card className="border-slate-200">
-        <CardHeader className="border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-slate-900">Detection Event Schema</h3>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <h3 className="panel-title text-[var(--accent-cyan)]">Detection Event Schema</h3>
             <Badge variant="warning">Design Only</Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Each future dashcam detection would produce a record like this:</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1.5">Each future dashcam detection would produce a record like this:</p>
         </CardHeader>
         <CardContent className="p-5">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
             {EVENT_SCHEMA.map((f) => (
-              <div key={f.field} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-                <p className="text-[10px] font-mono font-bold text-cyan-600 uppercase">{f.field}</p>
-                <p className="text-xs text-slate-600 font-mono truncate" title={f.example}>{f.example}</p>
+              <div key={f.field} className="rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-2)] px-3 py-2.5">
+                <p className="tech-label text-[var(--accent-cyan)]">{f.field}</p>
+                <p className="text-xs text-[var(--text-secondary)] font-mono truncate" title={f.example}>{f.example}</p>
               </div>
             ))}
           </div>
@@ -218,21 +268,27 @@ export default function DashcamRoadmap() {
 
       {/* Capabilities */}
       <div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-3">Planned Capabilities</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="tech-label text-[var(--accent-cyan)]">Planned Capabilities</span>
+          <span
+            className="h-px flex-1"
+            style={{ background: 'linear-gradient(90deg, rgba(34, 211, 238, 0.45) 0%, rgba(139, 92, 246, 0.15) 60%, transparent 100%)' }}
+          />
+        </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {CAPABILITIES.map((cap) => {
             const Icon = cap.icon
             return (
-              <Card key={cap.title} className="border-slate-200">
+              <Card key={cap.title} hover>
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-cyan-600" />
+                    <div className="w-10 h-10 rounded-xl bg-[var(--accent-cyan-dim)] border border-[rgba(34,211,238,0.3)] flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-[var(--accent-cyan)]" />
                     </div>
                     <Badge variant={cap.tag === 'Roadmap' ? 'warning' : 'primary'}>{cap.tag}</Badge>
                   </div>
-                  <h4 className="font-semibold text-slate-900 text-sm mb-1.5">{cap.title}</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">{cap.body}</p>
+                  <h4 className="font-semibold text-[var(--text-primary)] text-sm mb-1.5">{cap.title}</h4>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{cap.body}</p>
                 </CardContent>
               </Card>
             )
@@ -242,42 +298,42 @@ export default function DashcamRoadmap() {
 
       {/* Supporting roadmap cards */}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-slate-200">
+        <Card hover>
           <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <WifiOff className="w-4 h-4 text-slate-500" />
-              <h4 className="font-semibold text-sm text-slate-900">Offline / Mobile Reporting</h4>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <WifiOff className="w-4 h-4 text-[var(--text-muted)]" />
+              <h4 className="font-semibold text-sm text-[var(--text-primary)]">Offline / Mobile Reporting</h4>
               <Badge variant="warning">Coming Soon</Badge>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               Capture → store locally → queue with GPS → auto-sync when online. Architecture prepared;
               no fake offline functionality is presented as working today.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200">
+        <Card hover>
           <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <QrCode className="w-4 h-4 text-slate-500" />
-              <h4 className="font-semibold text-sm text-slate-900">QR Verification</h4>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <QrCode className="w-4 h-4 text-[var(--text-muted)]" />
+              <h4 className="font-semibold text-sm text-[var(--text-primary)]">QR Verification</h4>
               <Badge variant="warning">Coming Soon</Badge>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               Each resolved complaint gets a QR code → scan for complaint details, before/after images,
               verification result, location and resolution status. Transparent public verification.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200">
+        <Card hover>
           <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Globe className="w-4 h-4 text-slate-500" />
-              <h4 className="font-semibold text-sm text-slate-900">Multilingual Support</h4>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <Globe className="w-4 h-4 text-[var(--text-muted)]" />
+              <h4 className="font-semibold text-sm text-[var(--text-primary)]">Multilingual Support</h4>
               <Badge variant="primary">Architecture Ready</Badge>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               Translation structure prepared for English · Hindi · Marathi. Strings are not hardcoded
               throughout components — languages can be added without rewrites.
             </p>
@@ -286,17 +342,17 @@ export default function DashcamRoadmap() {
       </div>
 
       {/* Notifications architecture */}
-      <Card className="border-slate-200">
-        <CardHeader className="border-b border-slate-200">
+      <Card>
+        <CardHeader>
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-cyan-600" />
-            <h3 className="font-semibold text-slate-900">Notification Architecture</h3>
+            <Bell className="w-5 h-5 text-[var(--accent-cyan)]" />
+            <h3 className="panel-title text-[var(--accent-cyan)]">Notification Architecture</h3>
           </div>
         </CardHeader>
         <CardContent className="p-5 grid sm:grid-cols-3 gap-4 text-xs">
           <div>
-            <p className="font-bold uppercase tracking-wide text-blue-600 mb-2">Citizen</p>
-            <ul className="space-y-1 text-slate-600">
+            <p className="tech-label text-[var(--accent-blue)] mb-2">Citizen</p>
+            <ul className="space-y-1 text-[var(--text-secondary)]">
               <li>Complaint received</li>
               <li>Complaint assigned</li>
               <li>Repair started</li>
@@ -306,8 +362,8 @@ export default function DashcamRoadmap() {
             </ul>
           </div>
           <div>
-            <p className="font-bold uppercase tracking-wide text-amber-600 mb-2">Contractor</p>
-            <ul className="space-y-1 text-slate-600">
+            <p className="tech-label text-[var(--accent-amber)] mb-2">Contractor</p>
+            <ul className="space-y-1 text-[var(--text-secondary)]">
               <li>New assignment</li>
               <li>Deadline reminder</li>
               <li>Evidence accepted</li>
@@ -316,8 +372,8 @@ export default function DashcamRoadmap() {
             </ul>
           </div>
           <div>
-            <p className="font-bold uppercase tracking-wide text-purple-600 mb-2">Municipality</p>
-            <ul className="space-y-1 text-slate-600">
+            <p className="tech-label text-[var(--accent-purple)] mb-2">Municipality</p>
+            <ul className="space-y-1 text-[var(--text-secondary)]">
               <li>New complaint</li>
               <li>High severity pothole</li>
               <li>Verification mismatch</li>
@@ -328,7 +384,7 @@ export default function DashcamRoadmap() {
         </CardContent>
       </Card>
 
-      <p className="text-center text-xs text-slate-400 pb-4">
+      <p className="text-center text-xs text-[var(--text-muted)] pb-4">
         This page describes future architecture and roadmap. Dashcam detection is not yet live —
         no simulated detections are presented as real.
       </p>

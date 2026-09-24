@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { useMap } from '../utils/map'
 import { Flame } from 'lucide-react'
 
 /**
  * Clearly-labeled DEMO heatmap for Thane hotspots (Majiwada, Naupada, Pokhran Road, Kolshet).
- * Uses Leaflet circle overlays — no extra dependency.
+ * Uses Leaflet circle overlays â€” no extra dependency.
  */
 const HOTSPOTS = [
   { name: 'Majiwada', lat: 19.2400, lng: 72.9700, intensity: 0.95, color: '#ef4444', complaints: 18 },
@@ -24,8 +24,8 @@ export default function DemoHeatmap({ height = 360 }) {
     if (!mapLib || !containerRef.current || mapRef.current) return
 
     const map = mapLib.map(containerRef.current).setView([19.2183, 72.9781], 12)
-    mapLib.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+    mapLib.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'
     }).addTo(map)
 
     const layer = mapLib.layerGroup().addTo(map)
@@ -70,7 +70,7 @@ export default function DemoHeatmap({ height = 360 }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center bg-slate-100 border border-slate-200 rounded-xl" style={{ height }}>
-        <p className="text-slate-500">Loading heatmap…</p>
+        <p className="text-slate-500">Loading heatmapâ€¦</p>
       </div>
     )
   }
@@ -88,7 +88,7 @@ export default function DemoHeatmap({ height = 360 }) {
       <div ref={containerRef} style={{ height, width: '100%' }} aria-label="Demo heatmap" />
       <div className="absolute top-3 left-3 z-[1000] flex items-center gap-2 bg-white/95 border border-amber-300 text-amber-900 text-xs font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm shadow-sm">
         <Flame className="w-4 h-4 text-amber-600" />
-        DEMO HEATMAP — illustrative density only
+        DEMO HEATMAP â€” illustrative density only
       </div>
       <div className="absolute bottom-3 left-3 z-[1000] bg-white/95 border border-slate-200 rounded-lg px-3 py-2 text-[11px] space-y-1 shadow-sm">
         {HOTSPOTS.map((h) => (

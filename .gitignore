@@ -34,3 +34,8 @@ Thumbs.db
 
 # Vercel
 .vercel/
+.vercel
+.env*
+
+# QA screenshots
+.qa/
