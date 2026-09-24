@@ -32,6 +32,8 @@ const allowedOrigins = [...new Set([
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    // Vercel preview/production aliases (fixmycity.vercel.app, project-xyz.vercel.app)
+    if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) return cb(null, true);
     return cb(null, false);
   },
   credentials: true
