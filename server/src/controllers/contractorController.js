@@ -1,12 +1,64 @@
 import { Complaint, RepairSubmission, VerificationResult, Notification, User } from '../models/index.js';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { checkRepairProof } from '../services/gemini.js';
+import { persistUpload } from '../services/storage.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsRoot = path.join(__dirname, '../../uploads');
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5001';
+
+export const getContractorStats = async (req, res) => {
+  try {
+    const contractorId = req.user._id;
+    const [
+      totalAssigned,
+      pendingRepairs,
+      underRepair,
+      evidencePending,
+      verificationPending,
+      verified,
+      manualReview,
+      rejected,
+      resolved
+    ] = await Promise.all([
+      Complaint.countDocuments({ contractorId }),
+      Complaint.countDocuments({ contractorId, status: 'ASSIGNED' }),
+      Complaint.countDocuments({ contractorId, status: 'UNDER_REPAIR' }),
+      Complaint.countDocuments({ contractorId, status: { $in: ['ASSIGNED', 'UNDER_REPAIR'] } }),
+      Complaint.countDocuments({ contractorId, status: 'VERIFICATION' }),
+      Complaint.countDocuments({ contractorId, status: 'VERIFIED' }),
+      Complaint.countDocuments({ contractorId, status: 'MANUAL_REVIEW' }),
+      Complaint.countDocuments({ contractorId, status: 'REJECTED' }),
+      Complaint.countDocuments({ contractorId, status: 'RESOLVED' })
+    ]);
+
+    const verifications = await VerificationResult.find({
+      complaintId: { $in: (await Complaint.find({ contractorId }).select('_id')).map(c => c._id) }
+    }).select('decision totalScore createdAt');
+
+    const completedVerifications = verifications.length;
+    const avgScore = completedVerifications > 0
+      ? Math.round(verifications.reduce((s, v) => s + (v.totalScore || 0), 0) / completedVerifications)
+      : 0;
+
+    res.json({
+      totalAssigned,
+      pendingRepairs,
+      underRepair,
+      evidencePending,
+      verificationPending,
+      verified,
+      manualReview,
+      rejected,
+      resolved,
+      completedVerifications,
+      avgScore
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch contractor stats' });
+  }
+};
 
 export const getAssignments = async (req, res) => {
   try {
@@ -78,6 +130,13 @@ export const startRepair = async (req, res) => {
     }
 
     complaint.status = 'UNDER_REPAIR';
+    complaint.pushTimelineEvent({
+      event: 'REPAIR_STARTED',
+      actor: 'Contractor',
+      actorName: req.user.name,
+      message: `Repair started by ${req.user.name}`,
+      status: 'UNDER_REPAIR'
+    });
     await complaint.save();
 
     await Notification.create({
@@ -97,9 +156,8 @@ export const startRepair = async (req, res) => {
 export const submitRepairEvidence = async (req, res) => {
   try {
     const { latitude, longitude, notes } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!imageUrl) {
+    if (!req.file) {
       return res.status(400).json({ error: 'After-repair image is required' });
     }
 
@@ -116,6 +174,8 @@ export const submitRepairEvidence = async (req, res) => {
       return res.status(400).json({ error: 'Invalid complaint status for repair submission' });
     }
 
+    const imageUrl = await persistUpload(req.file);
+
     const repairSubmission = await RepairSubmission.create({
       complaintId: complaint._id,
       contractorId: req.user._id,
@@ -128,6 +188,13 @@ export const submitRepairEvidence = async (req, res) => {
 
     complaint.repairSubmissionId = repairSubmission._id;
     complaint.status = 'VERIFICATION';
+    complaint.pushTimelineEvent({
+      event: 'EVIDENCE_UPLOADED',
+      actor: 'Contractor',
+      actorName: req.user.name,
+      message: `Repair evidence uploaded by ${req.user.name}`,
+      status: 'VERIFICATION'
+    });
     await complaint.save();
 
     await Notification.create({
@@ -152,8 +219,7 @@ export const submitRepairEvidence = async (req, res) => {
     }
 
     // AI check: does the submitted photo actually show completed repair work?
-    const repairAbsPath = path.join(uploadsRoot, path.basename(imageUrl));
-    const geminiCheck = await checkRepairProof(repairAbsPath);
+    const geminiCheck = await checkRepairProof(imageUrl);
     console.log(`Repair proof AI check [${complaint.complaintId}]:`, geminiCheck.verdict, geminiCheck.confidence);
 
     try {
@@ -203,6 +269,15 @@ export const submitRepairEvidence = async (req, res) => {
           repairSubmission.status = 'REJECTED';
           break;
       }
+
+      complaint.pushTimelineEvent({
+        event: 'AI_VERIFICATION',
+        actor: 'AI',
+        actorName: 'AI Verification Engine',
+        message: `AI verification: ${verificationResult.decision} (Score: ${verificationResult.totalScore}/100)`,
+        status: complaint.status,
+        score: verificationResult.totalScore
+      });
 
       await complaint.save();
       await repairSubmission.save();
@@ -321,6 +396,10 @@ const buildGeminiRejectedResult = async (complaint, repairSubmission, geminiChec
 };
 
 const runAIVerification = async (complaint, repairSubmission) => {
+  if (!process.env.AI_SERVICE_URL) {
+    throw new Error('AI_SERVICE_URL is not configured — falling back to local scoring');
+  }
+
   const originalImagePath = path.join(uploadsRoot, path.basename(complaint.imageUrl || ''));
   const repairImagePath = path.join(uploadsRoot, path.basename(repairSubmission.imageUrl || ''));
 

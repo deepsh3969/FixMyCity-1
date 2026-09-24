@@ -67,6 +67,13 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
 
   const statusOrder = ['REPORTED', 'ASSIGNED', 'UNDER_REPAIR', 'VERIFICATION', 'VERIFIED', 'MANUAL_REVIEW', 'REJECTED', 'RESOLVED']
   const getStatusIndex = (status) => statusOrder.indexOf(status)
+  const progressPct = (status) => {
+    const idx = getStatusIndex(status)
+    if (status === 'RESOLVED') return 100
+    if (status === 'REJECTED') return 45
+    if (idx < 0) return 0
+    return Math.min(95, Math.round(((idx + 1) / statusOrder.length) * 100))
+  }
 
   const filteredComplaints = complaints.filter((c) => {
     if (!search) return true
@@ -120,6 +127,23 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
           </Button>
         </Link>
       </div>
+
+      {/* History summary strip */}
+      {isHistoryView && initialLoaded && !error && complaints.length > 0 && (
+        <div className="flex flex-wrap gap-3 text-sm">
+          {[
+            { label: 'Total', value: stats.total, cls: 'text-[var(--text-primary)]' },
+            { label: 'Active', value: stats.active, cls: 'text-[var(--accent-amber)]' },
+            { label: 'Under repair', value: stats.underRepair, cls: 'text-[var(--accent-amber)]' },
+            { label: 'Resolved', value: stats.resolved, cls: 'text-[var(--accent-green)]' }
+          ].map((s) => (
+            <span key={s.label} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-card-hover)] border border-[var(--border-subtle)]">
+              <span className="text-xs text-[var(--text-muted)]">{s.label}</span>
+              <span className={`font-bold tabular-nums ${s.cls}`}>{s.value}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Stats Cards */}
       {!isHistoryView && (
@@ -243,7 +267,7 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
             title={activeTab === 'all' ? 'No Reports Yet' : `No ${getStatusLabel(activeTab).toLowerCase()} Reports`}
             description={activeTab === 'all' 
               ? 'Start by reporting your first pothole. Help make your city better!'
-              : `You don&apos;t have any ${getStatusLabel(activeTab).toLowerCase()} complaints at the moment.`}
+              : `You don't have any ${getStatusLabel(activeTab).toLowerCase()} complaints at the moment.`}
             action={activeTab === 'all' && (
               <Link to="/citizen/report">
                 <Button><Plus className="w-5 h-5" /> Report Pothole</Button>
@@ -296,7 +320,7 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
                         {(complaint.address || complaint.latitude) && (
                           <span className="flex items-center gap-1 min-w-0">
                             <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                            <span className="truncate">📍 {describeLocation(complaint.latitude, complaint.longitude, complaint.address)}</span>
+                            <span className="truncate">{describeLocation(complaint.latitude, complaint.longitude, complaint.address)}</span>
                           </span>
                         )}
                         {complaint.contractorId && (
@@ -315,6 +339,24 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
                           </Badge>
                         </div>
                       )}
+
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="flex-1 h-1.5 bg-[var(--border-subtle)] rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              complaint.status === 'RESOLVED' || complaint.status === 'VERIFIED'
+                                ? 'bg-gradient-to-r from-[var(--accent-green)] to-[var(--accent-cyan)]'
+                                : complaint.status === 'REJECTED'
+                                  ? 'bg-[var(--accent-red)]'
+                                  : 'bg-gradient-to-r from-[var(--accent-cyan)] to-[var(--accent-purple)]'
+                            }`}
+                            style={{ width: `${progressPct(complaint.status)}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] flex-shrink-0">
+                          {getStatusLabel(complaint.status)}
+                        </span>
+                      </div>
                     </div>
 
                     <ChevronRight className="w-5 h-5 text-[var(--text-muted)] flex-shrink-0" />

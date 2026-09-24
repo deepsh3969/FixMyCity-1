@@ -9,7 +9,7 @@ import LocationMap, { LocationSummary } from '../components/LocationMap'
 import { describeLocation } from '../utils/geocode'
 import { getStatusMarkerColor } from '../utils/map'
 import VerificationPanel from '../components/VerificationPanel'
-import JudgeDemoPanel from '../components/JudgeDemoPanel'
+import AuditTimeline from '../components/AuditTimeline'
 
 const statusTimeline = [
   { key: 'REPORTED', label: 'Reported', icon: AlertTriangle },
@@ -66,7 +66,7 @@ export default function ComplaintDetail() {
       <EmptyState
         icon={<AlertTriangle className="w-8 h-8" />}
         title="Complaint Not Found"
-        description={error || 'The complaint you&apos;re looking for doesn&apos;t exist.'}
+            description={error || "The complaint you're looking for doesn't exist."}
         action={<Button onClick={() => navigate('/citizen/dashboard')}>Back to Dashboard</Button>}
       />
     )
@@ -104,50 +104,14 @@ export default function ComplaintDetail() {
       {/* Timeline */}
       <Card className="border-[var(--border-subtle)]">
         <CardHeader className="border-b border-[var(--border-subtle)]">
-          <h3 className="font-semibold text-[var(--text-primary)]">Progress Timeline</h3>
+          <h3 className="font-semibold text-[var(--text-primary)]">Evidence Audit Trail</h3>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Every action on this complaint, recorded with actor and timestamp</p>
         </CardHeader>
         <CardContent>
-          <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-[var(--border-subtle)]" />
-            <div className="space-y-6">
-              {statusTimeline.map((step, index) => {
-                const isCompleted = index <= currentStatusIndex
-                const isCurrent = index === currentStatusIndex
-                const isRejected = complaint.status === 'REJECTED' && step.key === 'REJECTED'
-                const isManualReview = complaint.status === 'MANUAL_REVIEW' && step.key === 'MANUAL_REVIEW'
-                
-                return (
-                  <div key={step.key} className="relative flex gap-4">
-                    <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
-                      isCompleted ? 'bg-gradient-to-br from-[var(--accent-cyan)] to-[var(--accent-purple)] border-white/20 shadow-md' : 'bg-[var(--bg-card-hover)] border-[var(--border-default)]'
-                    } ${isCurrent && !isRejected && !isManualReview ? 'ring-4 ring-[var(--accent-cyan)]/30 animate-pulse' : ''}`}>
-                      {isCompleted ? (
-                        <Check className="w-6 h-6 text-white" strokeWidth={3} />
-                      ) : (
-                        <step.icon className={`w-5 h-5 ${isCurrent ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`} />
-                      )}
-                    </div>
-                    <div className="flex-1 pt-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`font-medium ${isCompleted ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>{step.label}</span>
-                        {isCurrent && (
-                          <span className="text-xs px-2 py-0.5 bg-[var(--accent-cyan-dim)] text-[var(--accent-cyan)] rounded-full">Current</span>
-                        )}
-                      </div>
-                      {complaint[step.key.toLowerCase() === 'under_repair' ? 'assignedAt' : step.key.toLowerCase() + 'At'] && (
-                        <p className="text-sm text-[var(--text-muted)]">
-                          {formatDate(complaint[step.key.toLowerCase() === 'under_repair' ? 'assignedAt' : step.key.toLowerCase() + 'At'])}
-                        </p>
-                      )}
-                      {step.key === 'VERIFIED' && complaint.verificationResultId && (
-                        <p className="text-sm text-[var(--accent-green)] mt-1">Score: {complaint.verificationResultId.totalScore}/100</p>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+          <AuditTimeline
+            timeline={complaint.timeline || []}
+            emptyMessage="No audit events recorded yet. Events appear as the complaint progresses."
+          />
         </CardContent>
       </Card>
 
@@ -238,9 +202,6 @@ export default function ComplaintDetail() {
           {complaint.verificationResultId && (
             <VerificationPanel result={complaint.verificationResultId} complaintId={complaint.complaintId} />
           )}
-
-          {/* Judge Demo Panel */}
-          <JudgeDemoPanel />
 
           {/* Location Map */}
           <Card className="border-[var(--border-subtle)]">

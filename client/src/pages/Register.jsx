@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Shield, Mail, Lock, User, Phone, MapPin, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
+import { Mail, Lock, User, Phone, MapPin, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 import { Button, Input, Select, Card, CardContent } from '../components/UI'
+import BrandLogo from '../components/BrandLogo'
 import { dashboardPathFor } from '../utils/helpers'
 
 const roleOptions = [
@@ -95,11 +96,19 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center p-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
-              <Shield className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-2xl font-bold">FixMyCity</span>
+          <Link to="/" className="inline-flex flex-col items-center gap-4 mb-6 group">
+            <BrandLogo
+              variant="lg"
+              className="transition-transform duration-300 group-hover:scale-105 shadow-xl shadow-cyan-500/20"
+            />
+            <span className="flex flex-col items-center gap-1">
+              <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-none">
+                FixMyCity
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-600">
+                Smart City · Pothole Intelligence
+              </span>
+            </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Create Account</h1>
           <p className="text-slate-500">Join the smart city repair verification network</p>

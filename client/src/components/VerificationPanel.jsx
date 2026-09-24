@@ -3,11 +3,11 @@ import { Badge, ProgressBar, Card, CardContent, CardHeader } from '../components
 import { CheckCircle, XCircle, AlertCircle, HelpCircle, MapPin, Eye, Landmark, Route, AlertTriangle } from 'lucide-react'
 
 const criteria = [
-  { key: 'gps', label: 'GPS Match', weight: 30, icon: MapPin, color: 'var(--accent-blue)' },
-  { key: 'viewpoint', label: 'Viewpoint Match', weight: 20, icon: Eye, color: 'var(--accent-purple)' },
-  { key: 'landmark', label: 'Landmark Visibility', weight: 20, icon: Landmark, color: 'var(--accent-amber)' },
-  { key: 'roadScene', label: 'Road Scene Match', weight: 20, icon: Route, color: 'var(--accent-green)' },
-  { key: 'pothole', label: 'Pothole Match', weight: 10, icon: AlertTriangle, color: 'var(--accent-red)' },
+  { key: 'gpsScore', label: 'GPS Match', weight: 30, icon: MapPin, color: 'var(--accent-blue)' },
+  { key: 'viewpointScore', label: 'Viewpoint Match', weight: 20, icon: Eye, color: 'var(--accent-purple)' },
+  { key: 'landmarkScore', label: 'Landmark Visibility', weight: 20, icon: Landmark, color: 'var(--accent-amber)' },
+  { key: 'roadSceneScore', label: 'Road Scene Match', weight: 20, icon: Route, color: 'var(--accent-green)' },
+  { key: 'potholeScore', label: 'Pothole Match', weight: 10, icon: AlertTriangle, color: 'var(--accent-red)' },
 ]
 
 const decisionConfig = {
@@ -108,7 +108,7 @@ export default function VerificationPanel({ result, complaintId, isDemo = false,
                 <span className="px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: decisionStyle.bg, color: decisionStyle.color }}>
                   {confidence} CONFIDENCE
                 </span>
-                {distanceMeters && (
+                {typeof distanceMeters === 'number' && (
                   <span className="px-2 py-0.5 rounded-full bg-[var(--bg-card)] text-[var(--text-muted)]">
                     {distanceMeters}m GPS drift
                   </span>

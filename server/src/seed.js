@@ -77,6 +77,59 @@ const assignAuthority = ({ title = '', description = '', address = '', severity 
   return 'Thane Municipal Corporation (TMC)';
 };
 
+const buildSeedTimeline = (status, citizenName, contractorName, municipalName, reportedAt, assignedAt, complaintId) => {
+  const t = (d) => d ? new Date(d) : new Date();
+  const timeline = [{
+    event: 'REPORT_CREATED',
+    actor: 'Citizen',
+    actorName: citizenName,
+    message: `Complaint submitted by ${citizenName}`,
+    status: 'REPORTED',
+    timestamp: t(reportedAt)
+  }];
+  const order = ['REPORTED', 'ASSIGNED', 'UNDER_REPAIR', 'VERIFICATION', 'VERIFIED', 'MANUAL_REVIEW', 'REJECTED', 'RESOLVED'];
+  const reached = order.indexOf(status);
+  if (reached >= order.indexOf('ASSIGNED') && assignedAt) {
+    timeline.push({
+      event: 'ASSIGNED',
+      actor: 'Municipality',
+      actorName: municipalName,
+      message: `Assigned to contractor ${contractorName} by ${municipalName}`,
+      status: 'ASSIGNED',
+      timestamp: t(assignedAt)
+    });
+  }
+  if (reached >= order.indexOf('UNDER_REPAIR')) {
+    timeline.push({
+      event: 'REPAIR_STARTED',
+      actor: 'Contractor',
+      actorName: contractorName,
+      message: `Repair started by ${contractorName}`,
+      status: 'UNDER_REPAIR',
+      timestamp: t(assignedAt ? new Date(assignedAt.getTime() + 86400000) : reportedAt)
+    });
+  }
+  if (reached >= order.indexOf('VERIFICATION')) {
+    timeline.push({
+      event: 'EVIDENCE_UPLOADED',
+      actor: 'Contractor',
+      actorName: contractorName,
+      message: `Repair evidence uploaded by ${contractorName}`,
+      status: 'VERIFICATION',
+      timestamp: t(assignedAt ? new Date(assignedAt.getTime() + 172800000) : reportedAt)
+    });
+    timeline.push({
+      event: 'AI_VERIFICATION',
+      actor: 'AI',
+      actorName: 'AI Verification Engine',
+      message: `AI verification completed for ${complaintId}`,
+      status,
+      timestamp: t(assignedAt ? new Date(assignedAt.getTime() + 173400000) : reportedAt)
+    });
+  }
+  return timeline;
+};
+
 const seed = async () => {
   await connectDB();
 
@@ -237,7 +290,8 @@ const seed = async () => {
       description,
       address,
       severity,
-      assignedAuthority: assignAuthority({ title, description, address, severity })
+      assignedAuthority: assignAuthority({ title, description, address, severity }),
+      timeline: buildSeedTimeline(rest.status, citizen.name, contractor.name, municipal.name, rest.reportedAt, rest.assignedAt, def.complaintId)
     });
     complaints.push(complaint);
   }

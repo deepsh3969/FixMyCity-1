@@ -1,23 +1,21 @@
 import { Link } from 'react-router-dom'
-import { Card, CardContent, Badge } from './UI'
-import { getStatusLabel, getBadgeVariant, formatRelativeTime } from '../utils/helpers'
+import { Card, CardContent } from './UI'
 import { TrendingUp, Megaphone, ArrowUpRight } from 'lucide-react'
 
 /**
- * Clearly-labeled DEMO impact metrics for citizens.
+ * Impact metrics computed from the caller's real complaint stats.
  */
 export default function ImpactPanel({ stats }) {
   const total = stats?.total || 0
   const resolved = stats?.resolved || 0
   const active = stats?.active || 0
-  const repaired = stats?.underRepair || 0 + resolved
 
   const rows = [
     { label: 'Reports filed', value: total, hint: 'You helped surface these', tone: 'text-[var(--accent-cyan)]' },
     { label: 'Repairs completed', value: resolved, hint: 'Verified or resolved', tone: 'text-[var(--accent-green)]' },
-    { label: 'Still active', value: active, hint: 'In progress city-wide on your account', tone: 'text-[var(--accent-amber)]' },
+    { label: 'Still active', value: active, hint: 'In progress on your account', tone: 'text-[var(--accent-amber)]' },
     {
-      label: 'Verified rate',
+      label: 'Completion rate',
       value: total > 0 ? `${Math.round((resolved / total) * 100)}%` : '—',
       hint: 'Resolved / reported',
       tone: 'text-[var(--accent-purple)]'
@@ -32,7 +30,7 @@ export default function ImpactPanel({ stats }) {
           Your Impact
         </h3>
         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--text-primary)] text-white">
-          Demo metrics
+          Live data
         </span>
       </div>
       <CardContent className="p-5 space-y-3">

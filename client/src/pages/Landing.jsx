@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Shield, MapPin, Hammer, CheckCircle, ArrowRight, Zap, Eye, Target, Layers, TrendingUp, AlertTriangle } from 'lucide-react'
 import { Button } from '../components/UI'
+import BrandLogo from '../components/BrandLogo'
 
 const features = [
   {
@@ -64,7 +65,14 @@ export default function Landing() {
               <Zap className="w-4 h-4" />
               <span>Smart Cities & Urban Development Hackathon</span>
             </div>
-            
+
+            <div className="flex justify-center mb-6">
+              <BrandLogo
+                variant="lg"
+                className="shadow-xl shadow-cyan-500/20"
+              />
+            </div>
+
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               FixMyCity
             </h1>
@@ -169,10 +177,19 @@ export default function Landing() {
 
             <div className="relative">
               <div className="bg-white border border-slate-200 rounded-2xl p-6 lg:p-8">
-                <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-                  <Target className="w-5 h-5 text-cyan-600" />
-                  Verification Scorecard
-                </h3>
+                <div className="flex items-center justify-between gap-3 mb-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Target className="w-5 h-5 text-cyan-600" />
+                    Verification Scorecard
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/30">
+                    Example · Simulated
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 -mt-3 mb-5">
+                  Illustrative scores to show the report format. Real results are computed per complaint
+                  from actual before/after evidence.
+                </p>
                 
                 <div className="space-y-4">
                   {[

@@ -38,11 +38,11 @@ export default function Login() {
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex flex-col items-center gap-5 mb-8 group">
             <BrandLogo
-              variant="lg"
-              className="transition-transform duration-300 group-hover:scale-105 shadow-xl shadow-cyan-500/20"
+              variant="xl"
+              className="transition-transform duration-300 group-hover:scale-105 shadow-2xl shadow-cyan-500/25"
             />
             <span className="flex flex-col items-center gap-1.5">
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-none">
+              <span className="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-none">
                 FixMyCity
               </span>
               <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-cyan-600">

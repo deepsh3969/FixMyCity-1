@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api, { complaintAPI } from '../utils/api'
 import { validateImageFile, createObjectURL, revokeObjectURL } from '../utils/helpers'
+import { compressImage } from '../utils/image'
 import { MapPin, Camera, AlertTriangle, Loader2, Check, X, Map } from 'lucide-react'
 import { Button, Input, Textarea, Select, Card, CardContent, Badge, Alert, ProgressBar, Spinner, CoordsBadge } from '../components/UI'
 import AIImageAnalysis from '../components/AIImageAnalysis'
@@ -104,7 +105,7 @@ export default function ReportPothole() {
     }
   }
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0]
     if (!file) return
 
@@ -119,10 +120,11 @@ export default function ReportPothole() {
       return
     }
 
+    const compressed = await compressImage(file)
     setImageError('')
-    setImageFile(file)
-    setImagePreview(createObjectURL(file))
-    validateImageWithAI(file)
+    setImageFile(compressed)
+    setImagePreview(createObjectURL(compressed))
+    validateImageWithAI(compressed)
   }
 
   const removeImage = () => {

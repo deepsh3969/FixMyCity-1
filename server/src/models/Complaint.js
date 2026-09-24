@@ -1,5 +1,45 @@
 import mongoose from 'mongoose';
 
+const timelineEventSchema = new mongoose.Schema({
+  event: {
+    type: String,
+    required: true,
+    enum: [
+      'REPORT_CREATED',
+      'ASSIGNED',
+      'REPAIR_STARTED',
+      'EVIDENCE_UPLOADED',
+      'AI_VERIFICATION',
+      'MUNICIPAL_REVIEW',
+      'STATUS_CHANGED',
+      'RESOLVED',
+      'REJECTED'
+    ]
+  },
+  actor: {
+    type: String,
+    required: true,
+    enum: ['Citizen', 'Municipality', 'Contractor', 'AI', 'System']
+  },
+  actorName: {
+    type: String
+  },
+  message: {
+    type: String,
+    required: true
+  },
+  status: {
+    type: String
+  },
+  score: {
+    type: Number
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
+}, { _id: false });
+
 const complaintSchema = new mongoose.Schema({
   complaintId: {
     type: String,
@@ -69,10 +109,23 @@ const complaintSchema = new mongoose.Schema({
   reportedAt: {
     type: Date,
     default: Date.now
+  },
+  timeline: {
+    type: [timelineEventSchema],
+    default: []
   }
 }, {
   timestamps: true
 });
+
+complaintSchema.methods.pushTimelineEvent = function (event) {
+  if (!this.timeline) this.timeline = [];
+  this.timeline.push({
+    timestamp: new Date(),
+    ...event
+  });
+  return this;
+};
 
 complaintSchema.index({ latitude: 1, longitude: 1 });
 complaintSchema.index({ status: 1 });

@@ -1,4 +1,5 @@
 import { Complaint, RepairSubmission, VerificationResult, Notification, User } from '../models/index.js';
+import { persistUpload } from '../services/storage.js';
 
 const generateComplaintId = () => {
   const year = new Date().getFullYear();
@@ -29,7 +30,7 @@ const createNotification = async (userId, type, title, message, relatedComplaint
 export const createComplaint = async (req, res) => {
   try {
     const { title, description, severity, latitude, longitude, address } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    const imageUrl = req.file ? await persistUpload(req.file) : null;
 
     if (!imageUrl) {
       return res.status(400).json({ error: 'Image is required' });
@@ -50,7 +51,15 @@ export const createComplaint = async (req, res) => {
       address,
       assignedAuthority,
       status: 'REPORTED',
-      reportedAt: new Date()
+      reportedAt: new Date(),
+      timeline: [{
+        event: 'REPORT_CREATED',
+        actor: 'Citizen',
+        actorName: req.user.name,
+        message: `Complaint submitted by ${req.user.name}`,
+        status: 'REPORTED',
+        timestamp: new Date()
+      }]
     });
 
     await createNotification(
@@ -194,10 +203,28 @@ export const updateComplaintStatus = async (req, res) => {
 
     const oldStatus = complaint.status;
     complaint.status = status;
-    
+
     if (status === 'ASSIGNED' && !complaint.assignedAt) {
       complaint.assignedAt = new Date();
     }
+
+    const statusEventMap = {
+      ASSIGNED: { event: 'ASSIGNED', actor: 'Municipality' },
+      UNDER_REPAIR: { event: 'REPAIR_STARTED', actor: 'Contractor' },
+      VERIFICATION: { event: 'EVIDENCE_UPLOADED', actor: 'Contractor' },
+      VERIFIED: { event: 'AI_VERIFICATION', actor: 'AI' },
+      MANUAL_REVIEW: { event: 'MUNICIPAL_REVIEW', actor: 'AI' },
+      REJECTED: { event: 'REJECTED', actor: 'AI' },
+      RESOLVED: { event: 'RESOLVED', actor: 'Municipality' }
+    };
+    const ev = statusEventMap[status] || { event: 'STATUS_CHANGED', actor: 'Municipality' };
+    complaint.pushTimelineEvent({
+      event: ev.event,
+      actor: ev.actor,
+      actorName: req.user.name,
+      message: `Status changed from ${oldStatus} to ${status} by ${req.user.name}`,
+      status
+    });
 
     await complaint.save();
 
@@ -242,6 +269,13 @@ export const assignContractor = async (req, res) => {
     complaint.contractorId = contractorId;
     complaint.status = 'ASSIGNED';
     complaint.assignedAt = new Date();
+    complaint.pushTimelineEvent({
+      event: 'ASSIGNED',
+      actor: 'Municipality',
+      actorName: req.user.name,
+      message: `Assigned to contractor ${contractor.name} by ${req.user.name}`,
+      status: 'ASSIGNED'
+    });
     await complaint.save();
 
     await createNotification(

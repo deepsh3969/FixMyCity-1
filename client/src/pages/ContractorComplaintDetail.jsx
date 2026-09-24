@@ -2,13 +2,14 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { contractorAPI } from '../utils/api'
 import { formatDate, formatRelativeTime, getSeverityColor, getStatusColor, getStatusLabel, getDecisionColor, getConfidenceColor, validateImageFile, createObjectURL, revokeObjectURL, getSeverityBadgeVariant, getBadgeVariant, IMAGE_FALLBACK } from '../utils/helpers'
+import { compressImage } from '../utils/image'
 import { MapPin, Calendar, AlertTriangle, Camera, CheckCircle, AlertCircle, XCircle, Loader2, Map, ChevronLeft, Play, Upload, Image, X, Check, Zap } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, Badge, ProgressBar, Alert, Spinner, EmptyState, Modal, Input, CoordsBadge } from '../components/UI'
 import LocationMap, { LocationSummary } from '../components/LocationMap'
 import { describeLocation, reverseGeocode } from '../utils/geocode'
 import { getStatusMarkerColor } from '../utils/map'
 import VerificationPanel from '../components/VerificationPanel'
-import JudgeDemoPanel from '../components/JudgeDemoPanel'
+import AuditTimeline from '../components/AuditTimeline'
 
 const statusTimeline = [
   { key: 'ASSIGNED', label: 'Assigned', icon: AlertTriangle },
@@ -67,7 +68,7 @@ export default function ContractorComplaintDetail() {
     return statusTimeline.findIndex(s => s.key === complaint.status)
   }
 
-  const handleRepairImageChange = (e) => {
+  const handleRepairImageChange = async (e) => {
     const file = e.target.files[0]
     if (!file) return
     
@@ -79,9 +80,10 @@ export default function ContractorComplaintDetail() {
       return
     }
     
+    const compressed = await compressImage(file)
     setRepairImageError('')
-    setRepairImage(file)
-    setRepairPreview(createObjectURL(file))
+    setRepairImage(compressed)
+    setRepairPreview(createObjectURL(compressed))
   }
 
   const removeRepairImage = () => {
@@ -154,7 +156,7 @@ export default function ContractorComplaintDetail() {
       <EmptyState
         icon={<AlertTriangle className="w-8 h-8" />}
         title="Assignment Not Found"
-        description={error || 'The assignment you&apos;re looking for doesn&apos;t exist.'}
+            description={error || "The assignment you're looking for doesn't exist."}
         action={<Button onClick={() => navigate('/contractor/dashboard')}>Back to Dashboard</Button>}
       />
     )
@@ -194,50 +196,14 @@ export default function ContractorComplaintDetail() {
       {/* Timeline */}
       <Card>
         <CardHeader>
-          <h3 className="font-semibold">Repair Progress</h3>
+          <h3 className="font-semibold">Evidence Audit Trail</h3>
+          <p className="text-xs text-slate-500 mt-1">Every action on this complaint, recorded with actor and timestamp</p>
         </CardHeader>
         <CardContent>
-          <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-slate-200" />
-            <div className="space-y-6">
-              {statusTimeline.map((step, index) => {
-                const isCompleted = index <= currentStatusIndex
-                const isCurrent = index === currentStatusIndex
-                const isRejected = complaint.status === 'REJECTED' && step.key === 'REJECTED'
-                const isManualReview = complaint.status === 'MANUAL_REVIEW' && step.key === 'MANUAL_REVIEW'
-                
-                return (
-                  <div key={step.key} className="relative flex gap-4">
-                    <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
-                      isCompleted ? 'bg-gradient-to-br from-cyan-500 to-purple-600 border-white/20 shadow-md' : 'bg-slate-100 border-slate-300'
-                    } ${isCurrent && !isRejected && !isManualReview ? 'ring-4 ring-cyan-500/30 animate-pulse' : ''}`}>
-                      {isCompleted ? (
-                        <Check className="w-6 h-6 text-white" strokeWidth={3} />
-                      ) : (
-                        <step.icon className={`w-5 h-5 ${isCurrent ? 'text-cyan-600' : 'text-slate-500'}`} />
-                      )}
-                    </div>
-                    <div className="flex-1 pt-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`font-medium ${isCompleted ? 'text-slate-900' : 'text-slate-500'}`}>{step.label}</span>
-                        {isCurrent && (
-                          <span className="text-xs px-2 py-0.5 bg-cyan-500/20 text-cyan-600 rounded-full">Current</span>
-                        )}
-                      </div>
-                      {complaint[step.key.toLowerCase() === 'under_repair' ? 'assignedAt' : step.key.toLowerCase() + 'At'] && (
-                        <p className="text-sm text-slate-500">
-                          {formatDate(complaint[step.key.toLowerCase() === 'under_repair' ? 'assignedAt' : step.key.toLowerCase() + 'At'])}
-                        </p>
-                      )}
-                      {step.key === 'VERIFIED' && complaint.verificationResultId && (
-                        <p className="text-sm text-green-600 mt-1">Score: {complaint.verificationResultId.totalScore}/100</p>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+          <AuditTimeline
+            timeline={complaint.timeline || []}
+            emptyMessage="No audit events recorded yet. Events appear as the complaint progresses."
+          />
         </CardContent>
       </Card>
 
@@ -495,7 +461,7 @@ export default function ContractorComplaintDetail() {
                 </h3>
               </CardHeader>
               <CardContent className="p-6 pt-0 text-center py-8">
-                <p className="text-slate-500 mb-6">You&apos;ve been assigned to this repair. When you begin work, mark it as started.</p>
+                <p className="text-slate-500 mb-6">You've been assigned to this repair. When you begin work, mark it as started.</p>
                 <Button onClick={handleStartRepair} size="lg" className="w-full sm:w-auto">
                   <Play className="w-5 h-5" />
                   Start Repair

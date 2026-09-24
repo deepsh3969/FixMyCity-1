@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { Shield } from 'lucide-react'
 
 const VARIANTS = {
+  xl: {
+    box: 'w-36 h-36 sm:w-44 sm:h-44 rounded-[2rem] sm:rounded-[2.5rem]',
+    icon: 'w-20 h-20 sm:w-24 sm:h-24'
+  },
   lg: {
     box: 'w-24 h-24 sm:w-28 sm:h-28 rounded-3xl',
     icon: 'w-14 h-14 sm:w-16 sm:h-16'

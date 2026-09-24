@@ -201,22 +201,64 @@ function parseRepairJson(text) {
   try { return JSON.parse(match[0]); } catch { return null; }
 }
 
+const UPLOADS_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../uploads');
+
+const mimeFromPath = (p) => {
+  const ext = path.extname(p).toLowerCase();
+  return ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+};
+
+async function fetchImageBuffer(url) {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) return null;
+    const buf = Buffer.from(await r.arrayBuffer());
+    const ct = (r.headers.get('content-type') || '').toLowerCase();
+    const mimeType = ct.includes('png') ? 'image/png'
+      : ct.includes('webp') ? 'image/webp'
+      : ct.startsWith('image/') ? mimeFromPath(url)
+      : mimeFromPath(url);
+    return { base64: buf.toString('base64'), mimeType };
+  } catch {
+    return null;
+  }
+}
+
+// Accepts an http(s) URL (Vercel Blob), a /uploads/... path, or an absolute disk path.
+async function loadImageRef(ref) {
+  if (!ref) return null;
+  if (/^https?:\/\//i.test(ref)) return fetchImageBuffer(ref);
+  if (ref.startsWith('/uploads/')) {
+    const disk = path.join(UPLOADS_ROOT, path.basename(ref));
+    if (fs.existsSync(disk)) {
+      return { base64: fs.readFileSync(disk).toString('base64'), mimeType: mimeFromPath(disk) };
+    }
+    // Serverless: sample/seed images are served as static files from the site root.
+    if (process.env.VERCEL_URL) {
+      return fetchImageBuffer(`https://${process.env.VERCEL_URL}${ref}`);
+    }
+    return null;
+  }
+  if (fs.existsSync(ref)) {
+    return { base64: fs.readFileSync(ref).toString('base64'), mimeType: mimeFromPath(ref) };
+  }
+  return null;
+}
+
 /**
  * Gemini check that a submitted repair-proof image actually shows completed repair work.
  * Never throws — returns { verdict, confidence, notes }.
  * verdict: REPAIR_VISIBLE | NOT_A_REPAIR | UNCERTAIN | SKIPPED
  */
-export async function checkRepairProof(filePath) {
+export async function checkRepairProof(imageRef) {
   const skipped = (notes) => ({ verdict: 'SKIPPED', confidence: 0, notes });
   try {
     if (!isGeminiConfigured()) return skipped('Gemini not configured');
-    if (!filePath || !fs.existsSync(filePath)) return skipped('Repair image file not found');
 
-    const ext = path.extname(filePath).toLowerCase();
-    const mimeType = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
-    const imageBase64 = fs.readFileSync(filePath).toString('base64');
+    const image = await loadImageRef(imageRef);
+    if (!image) return skipped('Repair image not found');
 
-    const text = await askGeminiVision(REPAIR_PROOF_PROMPT, { imageBase64, mimeType, timeoutMs: 30000 });
+    const text = await askGeminiVision(REPAIR_PROOF_PROMPT, { imageBase64: image.base64, mimeType: image.mimeType, timeoutMs: 30000 });
     const parsed = parseRepairJson(text);
     if (!parsed || typeof parsed.isRepairProof !== 'boolean') {
       return skipped('AI returned an unparseable response');

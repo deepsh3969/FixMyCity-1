@@ -22,11 +22,12 @@ const __dirname = path.dirname(__filename);
 export const app = express();
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+const allowedOrigins = [...new Set([
+  process.env.CLIENT_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
   'http://localhost:5173',
   'http://127.0.0.1:5173'
-];
+].filter(Boolean))];
 
 app.use(cors({
   origin: (origin, cb) => {
@@ -58,13 +59,18 @@ app.use((err, req, res, next) => {
 let mongod = null;
 
 export const connectDB = async () => {
-  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/fixmycity';
+  const uri = process.env.MONGO_URI || (process.env.VERCEL ? null : 'mongodb://localhost:27017/fixmycity');
+
+  if (!uri) {
+    throw new Error('MONGO_URI is not set. Configure a MongoDB Atlas connection string in the Vercel project environment variables.');
+  }
 
   try {
     await mongoose.connect(uri);
     console.log('MongoDB connected');
     return;
   } catch (error) {
+    if (process.env.VERCEL) throw error;
     console.log('Local MongoDB not available, starting in-memory MongoDB...');
   }
 
@@ -86,6 +92,19 @@ export const startServer = async () => {
   });
 };
 
+let dbPromise = null;
+
+// Serverless entry: connect once per cold start, retryable on failure.
+export const ensureDb = () => {
+  if (!dbPromise) {
+    dbPromise = connectDB().catch((e) => {
+      dbPromise = null;
+      throw e;
+    });
+  }
+  return dbPromise;
+};
+
 process.on('SIGINT', async () => {
   if (mongod) {
     await mongod.stop();
@@ -94,6 +113,8 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.VERCEL) {
+  // Serverless: never call app.listen; the DB connects lazily via ensureDb().
+} else if (process.env.NODE_ENV !== 'test') {
   startServer();
 }

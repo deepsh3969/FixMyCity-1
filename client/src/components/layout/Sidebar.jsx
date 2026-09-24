@@ -21,7 +21,9 @@ import {
   ChevronLeft,
   Building2,
   ClipboardList,
-  Target
+  Target,
+  Beaker,
+  Car
 } from 'lucide-react';
 import { Button, Avatar } from '../UI';
 
@@ -31,12 +33,15 @@ const navigationConfig = {
     { path: '/citizen/report', label: 'Report Pothole', icon: AlertTriangle, roles: ['citizen'] },
     { path: '/citizen/map', label: 'Map View', icon: Map, roles: ['citizen'] },
     { path: '/citizen/history', label: 'History', icon: ClipboardList, roles: ['citizen'] },
+    { path: '/citizen/roadmap', label: 'AI Road Monitoring', icon: Car, roles: ['citizen'] },
   ],
   municipal: [
     { path: '/municipal/dashboard', label: 'Command Center', icon: LayoutDashboard, roles: ['municipal'] },
     { path: '/municipal/complaints', label: 'All Complaints', icon: ClipboardList, roles: ['municipal'] },
     { path: '/municipal/map', label: 'City Map', icon: Map, roles: ['municipal'] },
     { path: '/municipal/verification', label: 'Verification Center', icon: Target, roles: ['municipal'] },
+    { path: '/municipal/verification-lab', label: 'Verification Lab', icon: Beaker, roles: ['municipal'] },
+    { path: '/municipal/roadmap', label: 'AI Road Monitoring', icon: Car, roles: ['municipal'] },
     { path: '/municipal/analytics', label: 'Analytics', icon: BarChart3, roles: ['municipal'] },
     { path: '/municipal/contractors', label: 'Contractors', icon: Users, roles: ['municipal'] },
     { path: '/municipal/settings', label: 'Settings', icon: Settings, roles: ['municipal'] },
@@ -46,6 +51,7 @@ const navigationConfig = {
     { path: '/contractor/active', label: 'Active Repairs', icon: Hammer, roles: ['contractor'] },
     { path: '/contractor/submitted', label: 'Submitted', icon: ClipboardList, roles: ['contractor'] },
     { path: '/contractor/verified', label: 'Verified', icon: Shield, roles: ['contractor'] },
+    { path: '/contractor/roadmap', label: 'AI Road Monitoring', icon: Car, roles: ['contractor'] },
   ],
 };
 

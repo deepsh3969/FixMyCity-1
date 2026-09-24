@@ -49,6 +49,7 @@ export const complaintAPI = {
 
 export const contractorAPI = {
   getAssignments: (params) => api.get('/contractor', { params }),
+  getStats: () => api.get('/contractor/stats'),
   getAssignmentById: (id) => api.get(`/contractor/${id}`),
   startRepair: (id) => api.post(`/contractor/${id}/start-repair`),
   submitRepair: (id, data) => api.post(`/contractor/${id}/repair-submission`, data, { headers: { 'Content-Type': 'multipart/form-data' } })

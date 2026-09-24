@@ -3,7 +3,8 @@ import {
   getAssignments, 
   getAssignmentById, 
   startRepair, 
-  submitRepairEvidence 
+  submitRepairEvidence,
+  getContractorStats
 } from '../controllers/contractorController.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 import { upload, handleUploadError } from '../middleware/upload.js';
@@ -15,6 +16,7 @@ const router = Router();
 router.use(authenticate);
 router.use(authorize('contractor'));
 
+router.get('/stats', getContractorStats);
 router.get('/', getAssignments);
 router.get('/:id', getAssignmentById);
 

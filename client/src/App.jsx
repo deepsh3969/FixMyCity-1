@@ -11,6 +11,8 @@ import MunicipalDashboard from './pages/MunicipalDashboard';
 import MunicipalComplaintDetail from './pages/MunicipalComplaintDetail';
 import ContractorDashboard from './pages/ContractorDashboard';
 import ContractorComplaintDetail from './pages/ContractorComplaintDetail';
+import VerificationLab from './pages/VerificationLab';
+import DashcamRoadmap from './pages/DashcamRoadmap';
 import NotFound from './pages/NotFound';
 import { dashboardPathFor } from './utils/helpers';
 
@@ -59,6 +61,7 @@ function App() {
                 <Route path="complaint/:id" element={<ComplaintDetail />} />
                 <Route path="map" element={<CitizenDashboard view="map" />} />
                 <Route path="history" element={<CitizenDashboard view="history" />} />
+                <Route path="roadmap" element={<DashcamRoadmap />} />
                 <Route path="" element={<Navigate to="dashboard" replace />} />
               </Routes>
             </DashboardLayout>
@@ -77,6 +80,8 @@ function App() {
                 <Route path="complaint/:id" element={<MunicipalComplaintDetail />} />
                 <Route path="map" element={<MunicipalDashboard view="map" />} />
                 <Route path="verification" element={<MunicipalDashboard view="verification" />} />
+                <Route path="verification-lab" element={<VerificationLab />} />
+                <Route path="roadmap" element={<DashcamRoadmap />} />
                 <Route path="analytics" element={<MunicipalDashboard view="analytics" />} />
                 <Route path="contractors" element={<MunicipalDashboard view="contractors" />} />
                 <Route path="settings" element={<MunicipalDashboard view="settings" />} />
@@ -97,6 +102,7 @@ function App() {
                 <Route path="active" element={<ContractorDashboard view="active" />} />
                 <Route path="submitted" element={<ContractorDashboard view="submitted" />} />
                 <Route path="verified" element={<ContractorDashboard view="verified" />} />
+                <Route path="roadmap" element={<DashcamRoadmap />} />
                 <Route path="complaint/:id" element={<ContractorComplaintDetail />} />
                 <Route path="" element={<Navigate to="dashboard" replace />} />
               </Routes>

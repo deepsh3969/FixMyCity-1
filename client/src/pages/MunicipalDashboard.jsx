@@ -16,7 +16,7 @@ import {
 import ComplaintMap from '../components/ComplaintMap'
 import ActivityFeed from '../components/ActivityFeed'
 import AnalyticsPanel from '../components/AnalyticsPanel'
-import JudgeDemoPanel from '../components/JudgeDemoPanel'
+import { VerificationLabCases } from '../components/VerificationLabCases'
 
 const statusOptions = ['REPORTED', 'ASSIGNED', 'UNDER_REPAIR', 'VERIFICATION', 'VERIFIED', 'MANUAL_REVIEW', 'REJECTED', 'RESOLVED']
 const severityOptions = ['low', 'medium', 'high', 'critical']
@@ -27,7 +27,7 @@ const viewConfig = {
   map: { title: 'City Map', subtitle: 'Live markers across Thane with status filters + demo heatmap', showStats: false },
   verification: {
     title: 'Verification Center',
-    subtitle: 'AI Proof-of-Repair — Judge Demo + repairs awaiting review',
+    subtitle: 'AI Proof-of-Repair — simulated lab cases + repairs awaiting review',
     showStats: false,
     status: 'VERIFICATION,MANUAL_REVIEW',
     verificationOnly: true
@@ -356,11 +356,11 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
         </div>
       )}
 
-      {/* Dashboard extras: feed + judge demo */}
+      {/* Dashboard extras: verification lab cases + feed */}
       {view === 'dashboard' && (
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <JudgeDemoPanel />
+            <VerificationLabCases compact />
           </div>
           <div>
             <ActivityFeed complaints={filteredForFeed} />
@@ -371,7 +371,7 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
       {view === 'verification' && (
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <JudgeDemoPanel />
+            <VerificationLabCases />
           </div>
           <div>
             <ActivityFeed complaints={filteredForFeed} limit={6} />

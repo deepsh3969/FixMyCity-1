@@ -29,6 +29,7 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
   const [error, setError] = useState('')
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 })
   const [activeTab, setActiveTab] = useState(viewTabs[view] || 'all')
+  const [stats, setStats] = useState(null)
 
   useEffect(() => {
     setActiveTab(viewTabs[view] || 'all')
@@ -36,6 +37,14 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
   }, [view])
 
   const meta = viewTitles[view] || viewTitles.dashboard
+
+  useEffect(() => {
+    let cancelled = false
+    contractorAPI.getStats()
+      .then((res) => { if (!cancelled) setStats(res.data) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
 
   const fetchAssignments = async () => {
     if (!initialLoaded) setLoading(true)
@@ -90,14 +99,16 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats (server-side /api/contractor/stats with local fallback) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card hover className="border-[var(--border-subtle)]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[var(--text-muted)] text-sm">Total Assigned</p>
-                <p className="text-3xl font-bold text-[var(--text-primary)]">{pagination.total}</p>
+                <p className="text-3xl font-bold text-[var(--text-primary)]">
+                  {stats?.totalAssigned ?? pagination.total}
+                </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-[var(--accent-blue-dim)] flex items-center justify-center">
                 <MapPin className="w-6 h-6 text-[var(--accent-blue)]" />
@@ -111,7 +122,7 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
               <div>
                 <p className="text-[var(--text-muted)] text-sm">Assigned</p>
                 <p className="text-3xl font-bold text-[var(--accent-purple)]">
-                  {complaints.filter(c => c.status === 'ASSIGNED').length}
+                  {stats?.pendingRepairs ?? complaints.filter(c => c.status === 'ASSIGNED').length}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-[var(--accent-purple-dim)] flex items-center justify-center">
@@ -126,7 +137,7 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
               <div>
                 <p className="text-[var(--text-muted)] text-sm">Under Repair</p>
                 <p className="text-3xl font-bold text-[var(--accent-amber)]">
-                  {complaints.filter(c => c.status === 'UNDER_REPAIR').length}
+                  {stats?.underRepair ?? complaints.filter(c => c.status === 'UNDER_REPAIR').length}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-[var(--accent-amber-dim)] flex items-center justify-center">
@@ -139,9 +150,9 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[var(--text-muted)] text-sm">Completed</p>
+                <p className="text-[var(--text-muted)] text-sm">Verified Repairs</p>
                 <p className="text-3xl font-bold text-[var(--accent-green)]">
-                  {complaints.filter(c => ['VERIFIED', 'RESOLVED'].includes(c.status)).length}
+                  {stats ? stats.verified + stats.resolved : complaints.filter(c => ['VERIFIED', 'RESOLVED'].includes(c.status)).length}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-[var(--accent-green-dim)] flex items-center justify-center">
@@ -152,14 +163,14 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
         </Card>
       </div>
 
-      {/* DEMO Impact metrics */}
+      {/* Impact metrics */}
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-1">
           <ImpactPanel stats={{
-            total: pagination.total,
-            resolved: complaints.filter(c => ['VERIFIED', 'RESOLVED'].includes(c.status)).length,
-            active: complaints.filter(c => ['ASSIGNED', 'UNDER_REPAIR'].includes(c.status)).length,
-            underRepair: complaints.filter(c => c.status === 'UNDER_REPAIR').length
+            total: stats?.totalAssigned ?? pagination.total,
+            resolved: stats ? stats.verified + stats.resolved : complaints.filter(c => ['VERIFIED', 'RESOLVED'].includes(c.status)).length,
+            active: stats?.evidencePending ?? complaints.filter(c => ['ASSIGNED', 'UNDER_REPAIR'].includes(c.status)).length,
+            underRepair: stats?.underRepair ?? complaints.filter(c => c.status === 'UNDER_REPAIR').length
           }} />
         </div>
         <div className="lg:col-span-2">
@@ -180,6 +191,22 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
               <p className="text-sm text-[var(--text-muted)] mt-3">
                 We verify the location, not just the repair — GPS + viewpoint + landmarks + road geometry + pothole region (score /100).
               </p>
+              {stats && (
+                <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <p className="text-xl font-bold text-[var(--accent-cyan)] tabular-nums">{stats.avgScore || 0}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Avg AI score</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-[var(--accent-amber)] tabular-nums">{stats.verificationPending || 0}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">In review</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-[var(--accent-green)] tabular-nums">{stats.completedVerifications || 0}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">AI decisions</p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -218,8 +245,8 @@ export default function ContractorDashboard({ view = 'dashboard' }) {
             icon={<Hammer className="w-8 h-8" />}
             title={activeTab === 'all' ? 'No Assignments' : `No ${getStatusLabel(activeTab).toLowerCase()} Assignments`}
             description={activeTab === 'all' 
-              ? 'You don&apos;t have any repair assignments at the moment.'
-              : `You don&apos;t have any ${getStatusLabel(activeTab).toLowerCase()} assignments at the moment.`}
+              ? "You don't have any repair assignments at the moment."
+              : `You don't have any ${getStatusLabel(activeTab).toLowerCase()} assignments at the moment.`}
           />
         ) : (
           <div className="divide-y divide-[var(--border-subtle)]">
