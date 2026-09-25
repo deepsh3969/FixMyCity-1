@@ -2,6 +2,10 @@
 
 > **Smart City · Pothole Intelligence** — AI-powered pothole reporting, assignment, and fraud-proof repair verification.
 
+**🟢 Live app: [https://fixmycity-three.vercel.app](https://fixmycity-three.vercel.app)** · **📦 GitHub: [deepsh3969/FixMyCity-1](https://github.com/deepsh3969/FixMyCity-1)**
+
+![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?logo=vercel&logoColor=white)
+![GitHub Repo](https://img.shields.io/github/repo/deepsh3969/FixMyCity-1?logo=github&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
@@ -216,6 +220,17 @@ curl -X POST http://localhost:5000/api/seed
 | Retry / error recovery | **8/8** pass |
 | Repair proof gate | Positive + negative live-verified |
 | Seed photos | 5/5 unique (no duplicate thumbnails) |
+
+---
+
+## 🚀 Live Deployment
+
+| | |
+|---|---|
+| **App** | [https://fixmycity-three.vercel.app](https://fixmycity-three.vercel.app) |
+| **Hosting** | Vercel (frontend + serverless API) |
+| **CI/CD** | Every push to `master` auto-deploys |
+| **AI vision** | Local `ai-service` (Flask · OpenCV SIFT); dashcam demo shows an honest "service unavailable" state when it isn't running |
 
 ---
 
