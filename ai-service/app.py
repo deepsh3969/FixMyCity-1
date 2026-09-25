@@ -477,4 +477,9 @@ def dashcam_analyze():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # threaded=True so a long /dashcam/analyze never blocks /health or /verify.
+    # IPv4 bind: on Windows, `localhost` may fall back from ::1 to 127.0.0.1 with
+    # ~2s delay for some clients — use http://127.0.0.1:5001 for latency-sensitive
+    # tooling (Node's proxy uses happy-eyeballs and is unaffected).
+    host = os.environ.get('HOST', '0.0.0.0')
+    app.run(host=host, port=port, debug=False, threaded=True)
