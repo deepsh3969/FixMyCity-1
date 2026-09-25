@@ -36,8 +36,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center p-4 py-12">
       <div className="w-full max-w-md">
         <div className="glass p-8 relative overflow-hidden animate-slide-up">
-          <div className="absolute -top-24 -left-24 w-56 h-56 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-56 h-56 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -left-24 w-56 h-56 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-56 h-56 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative text-center mb-8">
             <Link to="/" className="inline-flex flex-col items-center gap-4 group">

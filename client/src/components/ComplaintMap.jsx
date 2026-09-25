@@ -1,7 +1,20 @@
 ﻿import { useEffect, useRef, useState } from 'react'
-import { useMap, createCustomIcon, getStatusMarkerColor } from '../utils/map'
+import { useMap, createCustomIcon, createYouIcon, getStatusMarkerColor } from '../utils/map'
 import { getStatusLabel } from '../utils/helpers'
 import { Layers, Flame, MapPin } from 'lucide-react'
+
+const LEGEND = [
+  { label: 'YOU', color: '#22d3ee', you: true },
+  { label: 'Reported', color: '#a855f7' },
+  { label: 'Assigned', color: '#6366f1' },
+  { label: 'Under Repair', color: '#3b82f6' },
+  { label: 'Verification', color: '#14b8a6' },
+  { label: 'Verified', color: '#10b981' },
+  { label: 'Manual Review', color: '#f59e0b' },
+  { label: 'Rejected', color: '#ef4444' },
+  { label: 'Resolved', color: '#64748b' }
+]
+
 
 const HOTSPOTS = [
   { name: 'Majiwada', lat: 19.2400, lng: 72.9700, intensity: 0.95, color: '#ef4444', complaints: 18 },
@@ -10,15 +23,50 @@ const HOTSPOTS = [
   { name: 'Kolshet', lat: 19.2450, lng: 72.9600, intensity: 0.75, color: '#f59e0b', complaints: 12 }
 ]
 
-export default function ComplaintMap({ complaints = [], height = 480, onSelect, showFilters = false, heatmap = false, heatmapLabels = [] }) {
+export default function ComplaintMap({ complaints = [], height = 480, onSelect, showFilters = false, heatmap = false, heatmapLabels = [], showHeading = false }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
   const markersRef = useRef(null)
   const heatRef = useRef(null)
+  const youRef = useRef(null)
   const { mapLib, loading, error } = useMap()
   const [gpsLoading, setGpsLoading] = useState(false)
+  const [gpsState, setGpsState] = useState('locating')
   const [usingDefaultCenter, setUsingDefaultCenter] = useState(true)
   const [showHeat, setShowHeat] = useState(heatmap)
+
+  const handleGpsSuccess = (position) => {
+    const { latitude, longitude } = position.coords
+    if (mapRef.current) {
+      mapRef.current.setView([latitude, longitude], 14)
+      if (mapLib) {
+        if (youRef.current) {
+          youRef.current.setLatLng([latitude, longitude])
+        } else {
+          youRef.current = mapLib
+            .marker([latitude, longitude], { icon: createYouIcon(mapLib), zIndexOffset: 1000, interactive: false })
+            .addTo(mapRef.current)
+        }
+      }
+    }
+    setUsingDefaultCenter(false)
+    setGpsState('ok')
+    setGpsLoading(false)
+  }
+
+  const handleGpsError = () => {
+    setGpsState('unavailable')
+    setGpsLoading(false)
+  }
+
+  const locateMe = () => {
+    if (!navigator.geolocation || !mapRef.current) {
+      setGpsState('unavailable')
+      return
+    }
+    setGpsLoading(true)
+    navigator.geolocation.getCurrentPosition(handleGpsSuccess, handleGpsError, { enableHighAccuracy: true, timeout: 8000 })
+  }
 
   useEffect(() => {
     if (!mapLib || !containerRef.current || mapRef.current) return
@@ -33,24 +81,22 @@ export default function ComplaintMap({ complaints = [], height = 480, onSelect, 
 
     if (navigator.geolocation) {
       setGpsLoading(true)
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords
-          map.setView([latitude, longitude], 14)
-          setUsingDefaultCenter(false)
-          setGpsLoading(false)
-        },
-        () => setGpsLoading(false),
-        { enableHighAccuracy: true, timeout: 8000 }
-      )
+      navigator.geolocation.getCurrentPosition(handleGpsSuccess, handleGpsError, { enableHighAccuracy: true, timeout: 8000 })
+    } else {
+      setGpsState('unavailable')
     }
 
     return () => {
+      if (youRef.current) {
+        youRef.current.remove()
+        youRef.current = null
+      }
       map.remove()
       mapRef.current = null
       markersRef.current = null
       heatRef.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapLib])
 
   useEffect(() => {
@@ -100,7 +146,7 @@ export default function ComplaintMap({ complaints = [], height = 480, onSelect, 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center bg-[#06111F] border border-[var(--border-default)] rounded-xl" style={{ height }}>
+      <div className="flex items-center justify-center bg-[#07121F] border border-[rgba(34,211,238,0.14)] rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.25)]" style={{ height }}>
         <p className="text-[var(--text-muted)]">Loading map...</p>
       </div>
     )
@@ -108,37 +154,34 @@ export default function ComplaintMap({ complaints = [], height = 480, onSelect, 
 
   if (error) {
     return (
-      <div className="flex items-center justify-center bg-[#06111F] border border-[var(--border-default)] rounded-xl" style={{ height }}>
+      <div className="flex items-center justify-center bg-[#07121F] border border-[rgba(34,211,238,0.14)] rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.25)]" style={{ height }}>
         <p className="text-[var(--accent-red)]">Failed to load map library</p>
       </div>
     )
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-[var(--border-default)] bg-[#06111F]">
-      <div ref={containerRef} style={{ height, width: '100%' }} aria-label="Complaint map" />
-      {usingDefaultCenter && (
-        <div className="hidden sm:block absolute top-3 left-14 z-[1000] bg-[#06111F]/90 border border-cyan-400/30 text-xs text-slate-300 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-          Defaulting to local city center (Thane)
+    <div className="overflow-hidden rounded-[14px] border border-[rgba(34,211,238,0.14)] bg-[#07121F] shadow-[0_8px_30px_rgba(0,0,0,0.25)]">
+      {showHeading && (
+        <div className="px-4 py-3 border-b border-[rgba(34,211,238,0.14)] bg-gradient-to-r from-[rgba(34,211,238,0.07)] to-transparent flex items-center justify-between gap-3">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--text-secondary)] flex items-center gap-2">
+            <MapPin className="w-3.5 h-3.5 text-[var(--accent-cyan)]" />
+            Live City Map
+          </h3>
+          <span className="tech-label text-[var(--accent-cyan)]">LIVE</span>
         </div>
       )}
+      <div className="relative">
+        <div ref={containerRef} style={{ height, width: '100%' }} aria-label="Complaint map" />
+        {usingDefaultCenter && (
+          <div className="absolute top-3 left-14 z-[1000] max-w-[62%] bg-[#06111F]/90 border border-cyan-400/30 text-xs text-slate-300 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+            {gpsState === 'unavailable' ? 'Location unavailable' : 'Defaulting to local city center (Thane)'}
+          </div>
+        )}
       <div className="absolute top-3 right-3 z-[1000] flex flex-col gap-2 items-end">
         <button
           type="button"
-          onClick={() => {
-            if (!navigator.geolocation || !mapRef.current) return
-            setGpsLoading(true)
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords
-                mapRef.current.setView([latitude, longitude], 14)
-                setUsingDefaultCenter(false)
-                setGpsLoading(false)
-              },
-              () => setGpsLoading(false),
-              { enableHighAccuracy: true, timeout: 8000 }
-            )
-          }}
+          onClick={locateMe}
           className="flex items-center gap-2 bg-[#06111F]/90 border border-cyan-400/30 text-xs text-slate-300 px-3 py-1.5 rounded-lg backdrop-blur-sm hover:border-cyan-400 hover:text-cyan-200 transition-colors"
           aria-label="My location"
         >
@@ -196,6 +239,23 @@ export default function ComplaintMap({ complaints = [], height = 480, onSelect, 
           </p>
         </div>
       )}
+      </div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-2.5 border-t border-[rgba(34,211,238,0.14)] bg-[rgba(7,18,31,0.95)]">
+        {LEGEND.map((item) => (
+          <span
+            key={item.label}
+            className={`inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider ${
+              item.you ? 'font-bold text-[var(--accent-cyan)]' : 'font-medium text-[var(--text-muted)]'
+            }`}
+          >
+            <span
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ background: item.color, boxShadow: `0 0 6px ${item.color}` }}
+            />
+            {item.label}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }

@@ -42,16 +42,26 @@ export function useMap() {
 
 export function getStatusMarkerColor(status) {
   const colors = {
-    REPORTED: '#3b82f6',
-    ASSIGNED: '#a855f7',
-    UNDER_REPAIR: '#f59e0b',
-    VERIFICATION: '#06b6d4',
+    REPORTED: '#a855f7',
+    ASSIGNED: '#6366f1',
+    UNDER_REPAIR: '#3b82f6',
+    VERIFICATION: '#14b8a6',
     VERIFIED: '#10b981',
     MANUAL_REVIEW: '#f59e0b',
     REJECTED: '#ef4444',
-    RESOLVED: '#6b7280'
+    RESOLVED: '#64748b'
   }
-  return colors[status] || '#3b82f6'
+  return colors[status] || '#a855f7'
+}
+
+export function createYouIcon(L) {
+  return L.divIcon({
+    className: 'you-marker',
+    html: `<div class="you-pin"><span class="you-label">YOU</span><span class="you-ring"></span><span class="you-dot"></span></div>`,
+    iconSize: [44, 44],
+    iconAnchor: [22, 26],
+    popupAnchor: [0, -26]
+  })
 }
 
 export function createCustomIcon(L, color, label) {

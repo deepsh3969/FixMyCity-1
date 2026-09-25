@@ -115,7 +115,7 @@ export default function CitizenDashboard({ view = 'dashboard' }) {
         {loading ? (
           <Card className="border-[var(--border-subtle)]"><SkeletonList rows={4} /></Card>
         ) : (
-          <ComplaintMap complaints={complaints} height={520} />
+          <ComplaintMap complaints={complaints} height={520} showHeading />
         )}
         <Card className="border-[var(--border-subtle)]">
           <div className="p-4 text-sm text-[var(--text-muted)]">{complaints.length} report(s) plotted</div>

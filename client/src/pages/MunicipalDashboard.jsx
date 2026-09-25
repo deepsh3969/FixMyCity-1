@@ -281,7 +281,7 @@ export default function MunicipalDashboard({ view = 'dashboard' }) {
         ) : (
           <>
             <MapFilters filters={filters} setFilters={setFilters} statusOptions={statusOptions} severityOptions={severityOptions} />
-            <ComplaintMap complaints={mapComplaints.length ? mapComplaints : complaints} height={560} heatmap heatmapLabels={['Majiwada', 'Naupada', 'Pokhran', 'Kolshet']} />
+            <ComplaintMap complaints={mapComplaints.length ? mapComplaints : complaints} height={560} showHeading heatmap heatmapLabels={['Majiwada', 'Naupada', 'Pokhran', 'Kolshet']} />
           </>
         )}
       </div>

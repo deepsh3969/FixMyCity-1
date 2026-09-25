@@ -45,18 +45,18 @@
   --bg-base: #030712;
   --bg-elevated: #06111F;
   --bg-deep: #071525;
-  --bg-card: rgba(8, 20, 35, 0.82);
+  --bg-card: rgba(7, 18, 31, 0.88);
   --bg-card-solid: #081423;
   --bg-card-hover: rgba(12, 29, 48, 0.92);
   --bg-input: rgba(6, 17, 31, 0.92);
   --bg-overlay: rgba(3, 7, 18, 0.8);
 
-  --panel: rgba(8, 20, 35, 0.82);
+  --panel: rgba(7, 18, 31, 0.88);
   --panel-2: rgba(12, 29, 48, 0.78);
   --panel-strong: rgba(5, 15, 28, 0.92);
-  --glass: rgba(5, 15, 28, 0.75);
+  --glass: rgba(7, 18, 31, 0.88);
 
-  --border-subtle: rgba(34, 211, 238, 0.20);
+  --border-subtle: rgba(34, 211, 238, 0.14);
   --border-default: rgba(34, 211, 238, 0.32);
   --border-strong: rgba(34, 211, 238, 0.5);
 
@@ -104,11 +104,11 @@
 [data-theme="dark"] {
   --bg-base: #030712;
   --bg-elevated: #06111F;
-  --bg-card: rgba(8, 20, 35, 0.82);
+  --bg-card: rgba(7, 18, 31, 0.88);
   --bg-card-hover: rgba(12, 29, 48, 0.92);
   --bg-input: rgba(6, 17, 31, 0.92);
   --bg-overlay: rgba(3, 7, 18, 0.8);
-  --border-subtle: rgba(34, 211, 238, 0.20);
+  --border-subtle: rgba(34, 211, 238, 0.14);
   --border-default: rgba(34, 211, 238, 0.32);
   --border-strong: rgba(34, 211, 238, 0.5);
   --text-primary: #F8FAFC;
@@ -147,13 +147,14 @@ body {
   overflow-x: hidden;
 }
 
-/* Futuristic aerial city backdrop + atmosphere */
+/* Futuristic aerial city backdrop + atmosphere (kept extremely subtle) */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
     url('/bg-city.svg') center center / cover no-repeat;
+  opacity: 0.1;
   pointer-events: none;
   z-index: -2;
 }
@@ -163,9 +164,10 @@ body::after {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 45% at 50% -8%, rgba(34, 211, 238, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 55% 40% at 92% 108%, rgba(139, 92, 246, 0.13) 0%, transparent 55%),
-    radial-gradient(ellipse 45% 35% at 4% 96%, rgba(59, 130, 246, 0.10) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 45% at 50% -8%, rgba(34, 211, 238, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 92% 108%, rgba(139, 92, 246, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 35% at 4% 96%, rgba(59, 130, 246, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 75% 75% at 50% 50%, transparent 55%, rgba(3, 7, 18, 0.55) 100%);
   pointer-events: none;
   z-index: -1;
 }
@@ -231,12 +233,12 @@ img {
 /* ===== Command-center primitives ===== */
 
 .glass {
-  background: var(--glass);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(34, 211, 238, 0.15);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-  border-radius: var(--radius-xl);
+  background: rgba(7, 18, 31, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(34, 211, 238, 0.14);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 14px;
 }
 
 .glass-soft {
@@ -244,7 +246,7 @@ img {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 14px;
 }
 
 .panel-title {
@@ -339,10 +341,10 @@ img {
   box-shadow: 0 0 8px currentColor;
 }
 
-.pill-reported { color: #67E8F9; background: rgba(34, 211, 238, 0.10); border-color: rgba(34, 211, 238, 0.35); }
-.pill-assigned { color: #A78BFA; background: rgba(139, 92, 246, 0.12); border-color: rgba(139, 92, 246, 0.4); }
+.pill-reported { color: #C4B5FD; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.4); }
+.pill-assigned { color: #A5B4FC; background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.4); }
 .pill-repair { color: #60A5FA; background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.4); }
-.pill-verification { color: #22D3EE; background: rgba(34, 211, 238, 0.10); border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 0 14px rgba(34, 211, 238, 0.15); }
+.pill-verification { color: #5EEAD4; background: rgba(20, 184, 166, 0.12); border-color: rgba(20, 184, 166, 0.4); box-shadow: 0 0 14px rgba(20, 184, 166, 0.15); }
 .pill-verified { color: #34D399; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.45); box-shadow: 0 0 14px rgba(16, 185, 129, 0.18); }
 .pill-review { color: #FBBF24; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.45); }
 .pill-rejected { color: #F87171; background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.45); }
@@ -470,7 +472,7 @@ img {
 .delay-5 { animation-delay: 0.5s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .scan-line::after, .shimmer, .marker-pulse, .marker-ping,
+  .scan-line::after, .shimmer, .marker-pulse, .marker-ping, .you-ring,
   .animate-fade-in, .animate-slide-up, .animate-slide-down,
   .animate-slide-in-right, .animate-pulse-glow, .animate-float,
   .animate-pulse-ring {

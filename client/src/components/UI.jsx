@@ -152,7 +152,7 @@ export const Select = forwardRef(function Select({
 Select.displayName = 'Select'
 
 export const Card = ({ children, className = '', hover = false }) => (
-  <div className={`bg-[var(--bg-card)] backdrop-blur-[10px] border border-[var(--border-subtle)] rounded-xl shadow-lg ${hover ? 'hover:border-[var(--border-default)] hover:shadow-[0_14px_40px_rgba(0,0,0,0.45)] transition-all duration-200' : 'transition-colors duration-200'} ${className}`}>
+  <div className={`bg-[var(--bg-card)] backdrop-blur-[10px] border border-[var(--border-subtle)] rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.25)] ${hover ? 'hover:border-[var(--border-default)] hover:shadow-[0_14px_40px_rgba(0,0,0,0.45)] transition-all duration-200' : 'transition-colors duration-200'} ${className}`}>
     {children}
   </div>
 )
@@ -170,7 +170,7 @@ export const CardContent = ({ children, className = '' }) => (
 )
 
 export const CardFooter = ({ children, className = '' }) => (
-  <div className={`px-6 py-4 border-t border-[var(--border-subtle)] bg-[var(--bg-base)] rounded-b-xl ${className}`}>
+  <div className={`px-6 py-4 border-t border-[var(--border-subtle)] bg-[var(--bg-base)] rounded-b-[14px] ${className}`}>
     {children}
   </div>
 )

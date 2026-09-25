@@ -106,10 +106,10 @@
    MUST stay AFTER @tailwind utilities so these win the cascade.
    ============================================================ */
 .bg-white { background-color: var(--panel); }
-.bg-white\/50 { background-color: rgba(8, 20, 35, 0.6); }
-.bg-white\/80 { background-color: rgba(8, 20, 35, 0.85); }
-.bg-white\/90 { background-color: rgba(8, 20, 35, 0.9); }
-.bg-white\/95 { background-color: rgba(8, 20, 35, 0.95); }
+.bg-white\/50 { background-color: rgba(7, 18, 31, 0.6); }
+.bg-white\/80 { background-color: rgba(7, 18, 31, 0.85); }
+.bg-white\/90 { background-color: rgba(7, 18, 31, 0.9); }
+.bg-white\/95 { background-color: rgba(7, 18, 31, 0.95); }
 .hover\:bg-white:hover { background-color: var(--bg-card-hover); }
 
 .bg-slate-50 { background-color: var(--panel-2); }
@@ -156,3 +156,63 @@
 .bg-slate-100 { background-color: rgba(12, 29, 48, 0.6); }
 .hover\:bg-red-50:hover { background-color: rgba(239, 68, 68, 0.1); }
 .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.18); }
+
+/* ============================================================
+   "YOU" current-location pin (cyan, pulsing, GPS-anchored)
+   ============================================================ */
+.you-marker {
+  background: transparent;
+  border: none;
+}
+
+.you-pin {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.you-pin .you-ring {
+  position: absolute;
+  left: 50%;
+  top: 26px;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: rgba(34, 211, 238, 0.5);
+  animation: markerPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.you-pin .you-dot {
+  position: absolute;
+  left: 50%;
+  top: 26px;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: #22d3ee;
+  border: 2.5px solid #ecfeff;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.9), 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.you-pin .you-label {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 1.5px 6px;
+  border-radius: 5px;
+  background: rgba(3, 7, 18, 0.88);
+  border: 1px solid rgba(34, 211, 238, 0.55);
+  color: #67e8f9;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
+  white-space: nowrap;
+  pointer-events: none;
+}
