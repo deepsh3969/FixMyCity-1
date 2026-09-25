@@ -4,64 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.leaflet-container {
-  background: var(--bg-elevated);
-  font-family: inherit;
-}
-
-.leaflet-popup-content-wrapper {
-  background: var(--bg-card-solid);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-}
-
-.leaflet-popup-tip {
-  background: var(--bg-card-solid);
-  border: 1px solid var(--border-subtle);
-}
-
-.leaflet-popup-content {
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.leaflet-popup-content a {
-  color: var(--accent-cyan);
-}
-
-.leaflet-control-attribution {
-  background: rgba(3, 7, 18, 0.75) !important;
-  color: var(--text-muted) !important;
-  font-size: 10px !important;
-}
-
-.leaflet-control-attribution a {
-  color: var(--text-secondary) !important;
-}
-
-.leaflet-control-zoom a {
-  background: var(--bg-card-solid) !important;
-  color: var(--text-primary) !important;
-  border: 1px solid var(--border-subtle) !important;
-}
-
-.leaflet-control-zoom a:hover {
-  background: var(--bg-card-hover) !important;
-}
-
-.leaflet-control-layers {
-  background: var(--bg-card-solid) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: var(--radius-md) !important;
-  color: var(--text-primary) !important;
-}
-
-.leaflet-control-layers-base label {
-  color: var(--text-secondary) !important;
-}
-
 .chart-container {
   position: relative;
   height: 300px;
@@ -158,61 +100,61 @@
 .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.18); }
 
 /* ============================================================
-   "YOU" current-location pin (cyan, pulsing, GPS-anchored)
+   Google Maps info window content (native white bubble)
    ============================================================ */
-.you-marker {
-  background: transparent;
-  border: none;
+.gm-iw {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: #0f172a;
+  min-width: 210px;
+  max-width: 280px;
+  padding: 2px 2px 4px;
 }
 
-.you-pin {
-  position: relative;
-  width: 44px;
-  height: 44px;
+.gm-iw-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
 }
 
-.you-pin .you-ring {
-  position: absolute;
-  left: 50%;
-  top: 26px;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border-radius: 50%;
-  background: rgba(34, 211, 238, 0.5);
-  animation: markerPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-  pointer-events: none;
-}
-
-.you-pin .you-dot {
-  position: absolute;
-  left: 50%;
-  top: 26px;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border-radius: 50%;
-  background: #22d3ee;
-  border: 2.5px solid #ecfeff;
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.9), 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.you-pin .you-label {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  padding: 1.5px 6px;
-  border-radius: 5px;
-  background: rgba(3, 7, 18, 0.88);
-  border: 1px solid rgba(34, 211, 238, 0.55);
-  color: #67e8f9;
+.gm-iw-id {
   font-family: var(--font-mono);
-  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  line-height: 1.4;
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
-  white-space: nowrap;
-  pointer-events: none;
+  font-size: 12.5px;
+  color: #0f172a;
+}
+
+.gm-iw-status {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0369a1;
+}
+
+.gm-iw-row {
+  line-height: 1.55;
+  color: #334155;
+}
+
+.gm-iw-btn {
+  display: block;
+  width: 100%;
+  margin-top: 9px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 8px;
+  background: #0e7490;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.gm-iw-btn:hover {
+  background: #0891b2;
 }
