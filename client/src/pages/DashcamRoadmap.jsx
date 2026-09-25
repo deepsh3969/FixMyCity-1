@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, Badge } from '../components/UI'
 import BrandLogo from '../components/BrandLogo'
+import DashcamDemo from '../components/DashcamDemo'
 
 const PIPELINE = [
   { icon: Car, label: 'Dashcam', sub: 'Vehicle captures road footage' },
@@ -152,6 +153,9 @@ export default function DashcamRoadmap() {
           </div>
         </div>
       </div>
+
+      {/* Real demo: upload a video → actual frame processing */}
+      <DashcamDemo />
 
       {/* Positioning */}
       <div className="grid md:grid-cols-3 gap-4">

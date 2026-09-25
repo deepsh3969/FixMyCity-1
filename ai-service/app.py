@@ -27,9 +27,17 @@ SCORING_WEIGHTS = {
     'pothole': 10
 }
 
+def _threshold(name: str, default: int) -> int:
+    try:
+        value = int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        return default
+    return max(0, min(100, value))
+
+
 DECISION_THRESHOLDS = {
-    'verified': 80,
-    'manual_review': 60
+    'verified': _threshold('VERIFICATION_VERIFIED_THRESHOLD', 80),
+    'manual_review': _threshold('VERIFICATION_MANUAL_THRESHOLD', 60)
 }
 
 try:
@@ -315,6 +323,157 @@ def verify():
     except Exception as e:
         logger.error(f"Verification error: {e}")
         return jsonify({'error': str(e)}), 500
+
+# ── Dashcam demo pipeline (modular package: dashcam/) ─────────────────────────
+ALLOWED_VIDEO_EXT = {'.mp4', '.mov', '.avi', '.mkv', '.webm', '.m4v'}
+
+
+@app.route('/dashcam/status', methods=['GET'])
+def dashcam_status():
+    try:
+        from dashcam import DASHCAM_CONFIG
+        from dashcam.detectors import build_detectors
+        _, yolo = build_detectors()
+        return jsonify({
+            'status': 'ok',
+            'service': 'dashcam-pipeline',
+            'yoloAvailable': yolo.available(),
+            'yoloModelPath': yolo.model_path,
+            'yoloPotholeTrained': yolo.pothole_trained,
+            'yoloLoadError': yolo.load_error,
+            'potholeModelSlot': str(DASHCAM_CONFIG['pothole_model']),
+            'frameInterval': DASHCAM_CONFIG['frame_interval'],
+            'maxUploadMb': DASHCAM_CONFIG['max_upload_mb'],
+            'maxDurationS': DASHCAM_CONFIG['max_duration_s'],
+            'geoClustering': {
+                'radiusM': DASHCAM_CONFIG['geo_cluster_radius_m'],
+                'minPoints': DASHCAM_CONFIG['geo_cluster_min_points']
+            }
+        })
+    except Exception as exc:  # noqa: BLE001
+        logger.error(f"dashcam status error: {exc}")
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+
+# In-memory registry for annotated demo outputs: token -> (path, created_epoch)
+_ANNOTATED_FILES = {}
+
+
+def _purge_annotated(max_age_s=900):
+    now = time.time()
+    for token in [t for t, (_, created) in _ANNOTATED_FILES.items() if now - created > max_age_s]:
+        path, _ = _ANNOTATED_FILES.pop(token)
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+
+
+@app.route('/dashcam/annotated/<token>', methods=['GET'])
+def dashcam_annotated(token):
+    import flask
+    _purge_annotated()
+    entry = _ANNOTATED_FILES.get(token)
+    if not entry:
+        return jsonify({'error': 'Annotated video not found or expired.', 'code': 'NOT_FOUND'}), 404
+    path, _ = entry
+    if not os.path.isfile(path):
+        _ANNOTATED_FILES.pop(token, None)
+        return jsonify({'error': 'Annotated video file missing.', 'code': 'NOT_FOUND'}), 404
+    return flask.send_file(path, mimetype='video/mp4', as_attachment=False,
+                           download_name='dashcam-annotated.mp4')
+
+
+@app.route('/dashcam/analyze', methods=['POST'])
+def dashcam_analyze():
+    import tempfile
+    import uuid
+    from pathlib import Path
+    from dashcam import DASHCAM_CONFIG, analyze_video
+    from dashcam.video_source import VideoSource
+
+    video = request.files.get('video')
+    if video is None or not video.filename:
+        return jsonify({'error': 'Video file is required (form field "video").',
+                        'code': 'NO_VIDEO'}), 400
+
+    suffix = Path(video.filename).suffix.lower()
+    if suffix not in ALLOWED_VIDEO_EXT:
+        return jsonify({'error': f'Unsupported video type "{suffix}". Allowed: {sorted(ALLOWED_VIDEO_EXT)}',
+                        'code': 'UNSUPPORTED_TYPE'}), 400
+
+    want_annotated = request.form.get('includeAnnotated') == '1'
+    max_bytes = DASHCAM_CONFIG['max_upload_mb'] * 1024 * 1024
+    temp_path = None
+    annotated_temp = None
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            temp_path = tmp.name
+            total = 0
+            while True:
+                chunk = video.stream.read(1024 * 1024)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > max_bytes:
+                    return jsonify({'error': f'Video exceeds {DASHCAM_CONFIG["max_upload_mb"]} MB limit.',
+                                    'code': 'VIDEO_TOO_LARGE'}), 400
+                tmp.write(chunk)
+            if total == 0:
+                return jsonify({'error': 'Uploaded video is empty.', 'code': 'EMPTY_VIDEO'}), 400
+
+        try:
+            with VideoSource(temp_path, max_frames=1) as probe:
+                duration = probe.meta.duration_s
+        except Exception:  # noqa: BLE001
+            return jsonify({'error': 'Video could not be read or is corrupt.',
+                            'code': 'VIDEO_UNREADABLE'}), 400
+
+        if duration and duration > DASHCAM_CONFIG['max_duration_s']:
+            return jsonify({'error': f'Video duration {duration:.0f}s exceeds limit of '
+                                     f'{DASHCAM_CONFIG["max_duration_s"]}s.',
+                            'code': 'VIDEO_TOO_LONG'}), 400
+
+        if want_annotated:
+            annotated_temp = tempfile.mktemp(suffix='.mp4')
+
+        result = analyze_video(
+            temp_path,
+            write_annotated=want_annotated,
+            annotated_output=annotated_temp,
+        )
+
+        annotated = result.pop('annotatedVideo', None)
+        if annotated and os.path.isfile(annotated):
+            _purge_annotated()
+            token = uuid.uuid4().hex
+            _ANNOTATED_FILES[token] = (annotated, time.time())
+            result['annotatedVideoUrl'] = f'/dashcam/annotated/{token}'
+        else:
+            result['annotatedVideoUrl'] = None
+
+        logger.info(f"dashcam analyze: {result['framesProcessed']} frames, "
+                    f"{result['potholesDetected']} detections, "
+                    f"{result['roadDefectClusters']} clusters")
+        return jsonify(result)
+
+    except MemoryError:
+        return jsonify({'error': 'Video too large to process.', 'code': 'OUT_OF_MEMORY'}), 413
+    except Exception as exc:  # noqa: BLE001
+        logger.error(f"dashcam analyze error: {exc}")
+        if annotated_temp and os.path.isfile(annotated_temp):
+            try:
+                os.unlink(annotated_temp)
+            except OSError:
+                pass
+        return jsonify({'error': f'Processing failed: {exc}', 'code': 'PROCESSING_ERROR'}), 500
+    finally:
+        if temp_path:
+            try:
+                os.unlink(temp_path)
+            except OSError:
+                pass
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))

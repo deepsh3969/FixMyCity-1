@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { isGeminiConfigured, askGeminiVision } from '../services/gemini.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -148,12 +149,21 @@ function uploadSingle(field) {
   };
 }
 
+const parseThreshold = (value, fallback) => {
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 && n <= 100 ? n : fallback;
+};
+
 router.get('/status', (req, res) => {
   res.json({
     service: 'fixmycity-ai-brain',
     geminiConfigured: isGeminiConfigured(),
     model: process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
-    visionService: process.env.AI_SERVICE_URL || 'http://localhost:5001'
+    visionService: process.env.AI_SERVICE_URL || 'http://localhost:5001',
+    thresholds: {
+      verified: parseThreshold(process.env.VERIFICATION_VERIFIED_THRESHOLD, 80),
+      manualReview: parseThreshold(process.env.VERIFICATION_MANUAL_THRESHOLD, 60)
+    }
   });
 });
 
@@ -219,6 +229,91 @@ router.post('/validate-image', uploadSingle('image'), async (req, res) => {
     console.error('validate-image unexpected error:', error);
     return errorResponse(res, 500, 'INTERNAL_ERROR', 'AI analysis failed unexpectedly. Please try again.');
   }
+});
+
+// ── Dashcam demo (proxy to the modular dashcam/ package in ai-service) ────────
+const DASHCAM_AI_URL = process.env.AI_SERVICE_URL || 'http://localhost:5001';
+const DASHCAM_UNAVAILABLE = {
+  code: 'DASHCAM_SERVICE_UNAVAILABLE',
+  error: 'The dashcam demo service is not running. Start the local AI service (python ai-service/app.py) and retry.'
+};
+
+const videoUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: process.env.VERCEL ? 4 * 1024 * 1024 : 80 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska',
+      'video/webm', 'video/m4v', 'video/avi'].includes(file.mimetype)
+      || /\.(mp4|mov|avi|mkv|webm|m4v)$/i.test(file.originalname || '');
+    if (ok) cb(null, true);
+    else cb(new Error('Invalid video type. Allowed: MP4, MOV, AVI, MKV, WEBM.'), false);
+  }
+});
+
+router.get('/dashcam/status', authenticate, async (req, res) => {
+  try {
+    const response = await fetch(`${DASHCAM_AI_URL}/dashcam/status`);
+    const data = await response.json().catch(() => null);
+    return res.status(response.status).json(data ?? { ...DASHCAM_UNAVAILABLE });
+  } catch {
+    return res.status(503).json(DASHCAM_UNAVAILABLE);
+  }
+});
+
+router.get('/dashcam/annotated/:token', async (req, res) => {
+  try {
+    const response = await fetch(`${DASHCAM_AI_URL}/dashcam/annotated/${encodeURIComponent(req.params.token)}`);
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      return res.status(response.status).json(
+        data ?? { code: 'NOT_FOUND', error: 'Annotated video not found or expired.' }
+      );
+    }
+    const buffer = Buffer.from(await response.arrayBuffer());
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', 'inline; filename="dashcam-annotated.mp4"');
+    return res.send(buffer);
+  } catch {
+    return res.status(503).json(DASHCAM_UNAVAILABLE);
+  }
+});
+
+router.post('/dashcam/analyze', authenticate, (req, res) => {
+  videoUpload.single('video')(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      const msg = err.code === 'LIMIT_FILE_SIZE'
+        ? 'Video too large for this environment.'
+        : `Upload error: ${err.message}`;
+      return errorResponse(res, 400, 'VIDEO_TOO_LARGE_OR_INVALID', msg);
+    }
+    if (err) {
+      return errorResponse(res, 400, 'UNSUPPORTED_TYPE', err.message);
+    }
+    if (!req.file) {
+      return errorResponse(res, 400, 'NO_VIDEO', 'Video file is required (form field "video").');
+    }
+    try {
+      const form = new FormData();
+      form.append(
+        'video',
+        new Blob([req.file.buffer], { type: req.file.mimetype }),
+        req.file.originalname || 'dashcam-upload.mp4'
+      );
+      for (const [key, value] of Object.entries(req.body || {})) {
+        if (typeof value === 'string') form.append(key, value);
+      }
+      const response = await fetch(`${DASHCAM_AI_URL}/dashcam/analyze`, {
+        method: 'POST',
+        body: form
+      });
+      const data = await response.json().catch(() => null);
+      return res.status(response.status).json(
+        data ?? { code: 'BAD_AI_RESPONSE', error: 'The AI service returned an unreadable response.' }
+      );
+    } catch {
+      return res.status(503).json(DASHCAM_UNAVAILABLE);
+    }
+  });
 });
 
 export default router;

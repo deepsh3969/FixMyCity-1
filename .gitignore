@@ -38,3 +38,6 @@ Thumbs.db
 
 # QA screenshots
 .qa/
+
+# YOLO weights (AGPL-licensed; download via ai-service/models/README.md)
+ai-service/models/*.pt
