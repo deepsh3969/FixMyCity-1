@@ -83,7 +83,11 @@ export default function AuditTimeline({ timeline = [], emptyMessage = 'No audit 
           const cfg = EVENT_CONFIG[ev.event] || EVENT_CONFIG.STATUS_CHANGED
           const Icon = cfg.icon
           return (
-            <li key={`${ev.event}-${idx}-${ev.timestamp}`} className="relative flex gap-4">
+            <li
+              key={`${ev.event}-${idx}-${ev.timestamp}`}
+              className="relative flex gap-4 animate-fade-in"
+              style={{ animationDelay: `${Math.min(idx, 8) * 80}ms` }}
+            >
               <div
                 className="relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border backdrop-blur-sm"
                 style={{ backgroundColor: cfg.bg, borderColor: cfg.border, boxShadow: `0 0 10px ${cfg.glow}` }}

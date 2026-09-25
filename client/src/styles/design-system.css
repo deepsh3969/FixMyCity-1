@@ -344,7 +344,7 @@ img {
 .pill-reported { color: #C4B5FD; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.4); }
 .pill-assigned { color: #A5B4FC; background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.4); }
 .pill-repair { color: #60A5FA; background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.4); }
-.pill-verification { color: #5EEAD4; background: rgba(20, 184, 166, 0.12); border-color: rgba(20, 184, 166, 0.4); box-shadow: 0 0 14px rgba(20, 184, 166, 0.15); }
+.pill-verification { color: #FBBF24; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 14px rgba(245, 158, 11, 0.15); }
 .pill-verified { color: #34D399; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.45); box-shadow: 0 0 14px rgba(16, 185, 129, 0.18); }
 .pill-review { color: #FBBF24; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.45); }
 .pill-rejected { color: #F87171; background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.45); }
@@ -455,10 +455,10 @@ img {
   100% { box-shadow: 0 0 0 8px transparent; }
 }
 
-.animate-fade-in { animation: fadeIn var(--transition-base) ease forwards; }
-.animate-slide-up { animation: slideUp var(--transition-base) ease forwards; }
-.animate-slide-down { animation: slideDown var(--transition-base) ease forwards; }
-.animate-slide-in-right { animation: slideInRight var(--transition-base) ease forwards; }
+.animate-fade-in { animation: fadeIn var(--transition-base) forwards; }
+.animate-slide-up { animation: slideUp var(--transition-base) forwards; }
+.animate-slide-down { animation: slideDown var(--transition-base) forwards; }
+.animate-slide-in-right { animation: slideInRight var(--transition-base) forwards; }
 .animate-spin { animation: spin 1s linear infinite; }
 .animate-pulse { animation: pulse 2s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }

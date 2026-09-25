@@ -33,7 +33,7 @@ const navigationConfig = {
     { path: '/citizen/report', label: 'Report Pothole', icon: AlertTriangle, roles: ['citizen'] },
     { path: '/citizen/map', label: 'Map View', icon: Map, roles: ['citizen'] },
     { path: '/citizen/history', label: 'History', icon: ClipboardList, roles: ['citizen'] },
-    { path: '/citizen/roadmap', label: 'AI Road Monitoring', icon: Car, roles: ['citizen'] },
+    { path: '/citizen/roadmap', label: 'AI Road Monitoring', icon: Car, soon: true, roles: ['citizen'] },
   ],
   municipal: [
     { path: '/municipal/dashboard', label: 'Command Center', icon: LayoutDashboard, roles: ['municipal'] },
@@ -41,7 +41,7 @@ const navigationConfig = {
     { path: '/municipal/map', label: 'City Map', icon: Map, roles: ['municipal'] },
     { path: '/municipal/verification', label: 'Verification Center', icon: Target, roles: ['municipal'] },
     { path: '/municipal/verification-lab', label: 'Verification Lab', icon: Beaker, roles: ['municipal'] },
-    { path: '/municipal/roadmap', label: 'AI Road Monitoring', icon: Car, roles: ['municipal'] },
+    { path: '/municipal/roadmap', label: 'AI Road Monitoring', icon: Car, soon: true, roles: ['municipal'] },
     { path: '/municipal/analytics', label: 'Analytics', icon: BarChart3, roles: ['municipal'] },
     { path: '/municipal/contractors', label: 'Contractors', icon: Users, roles: ['municipal'] },
     { path: '/municipal/settings', label: 'Settings', icon: Settings, roles: ['municipal'] },
@@ -51,7 +51,7 @@ const navigationConfig = {
     { path: '/contractor/active', label: 'Active Repairs', icon: Hammer, roles: ['contractor'] },
     { path: '/contractor/submitted', label: 'Submitted', icon: ClipboardList, roles: ['contractor'] },
     { path: '/contractor/verified', label: 'Verified', icon: Shield, roles: ['contractor'] },
-    { path: '/contractor/roadmap', label: 'AI Road Monitoring', icon: Car, roles: ['contractor'] },
+    { path: '/contractor/roadmap', label: 'AI Road Monitoring', icon: Car, soon: true, roles: ['contractor'] },
   ],
 };
 
@@ -165,6 +165,14 @@ function Sidebar() {
               >
                 <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 {!collapsed && <span className="font-medium truncate">{item.label}</span>}
+                {!collapsed && item.soon && (
+                  <span
+                    className="ml-auto flex-shrink-0 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--accent-amber-dim)] text-[var(--accent-amber)] border border-[rgba(245,158,11,0.4)]"
+                    aria-label="Coming soon"
+                  >
+                    Coming Soon
+                  </span>
+                )}
               </NavLink>
             );
           })}

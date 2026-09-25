@@ -21,7 +21,7 @@ const statusOptions = ['REPORTED', 'ASSIGNED', 'UNDER_REPAIR', 'VERIFICATION', '
 const severityOptions = ['low', 'medium', 'high', 'critical']
 
 const viewConfig = {
-  dashboard: { title: 'Municipal Admin Dashboard', subtitle: 'Track your pothole complaints and repair progress across the city.', showStats: true },
+  dashboard: { title: 'Municipal Command Center', subtitle: 'Track your pothole complaints and repair progress across the city.', showStats: true },
   complaints: { title: 'All Complaints', subtitle: 'Search, filter, and manage every reported pothole', showStats: false },
   map: { title: 'City Map', subtitle: 'Live markers across Thane with status filters + demo heatmap', showStats: false },
   verification: {

@@ -18,11 +18,11 @@ const LEGEND = [
   { label: 'Reported', color: '#a855f7' },
   { label: 'Assigned', color: '#6366f1' },
   { label: 'Under Repair', color: '#3b82f6' },
-  { label: 'Verification', color: '#14b8a6' },
+  { label: 'Verification', color: '#f59e0b' },
   { label: 'Verified', color: '#10b981' },
   { label: 'Manual Review', color: '#f59e0b' },
   { label: 'Rejected', color: '#ef4444' },
-  { label: 'Resolved', color: '#64748b' }
+  { label: 'Resolved', color: '#10b981' }
 ]
 
 const THANE = { lat: 19.2183, lng: 72.9781 }

@@ -8,6 +8,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsRoot = path.join(__dirname, '../../uploads');
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5001';
 
+const parseThreshold = (value, fallback) => {
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 && n <= 100 ? n : fallback;
+};
+const VERIFIED_THRESHOLD = parseThreshold(process.env.VERIFICATION_VERIFIED_THRESHOLD, 80);
+const MANUAL_REVIEW_THRESHOLD = parseThreshold(process.env.VERIFICATION_MANUAL_THRESHOLD, 60);
+
 export const getContractorStats = async (req, res) => {
   try {
     const contractorId = req.user._id;
@@ -451,10 +458,10 @@ const createFallbackVerification = async (complaint, repairSubmission) => {
   let decision = 'MANUAL_REVIEW';
   let confidence = 'LOW';
   
-  if (totalScore >= 80) {
+  if (totalScore >= VERIFIED_THRESHOLD) {
     decision = 'VERIFIED';
     confidence = 'HIGH';
-  } else if (totalScore >= 60) {
+  } else if (totalScore >= MANUAL_REVIEW_THRESHOLD) {
     decision = 'MANUAL_REVIEW';
     confidence = 'MEDIUM';
   } else {

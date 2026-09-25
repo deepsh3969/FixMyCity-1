@@ -182,7 +182,8 @@ export const Badge = ({ children, variant = 'default', className = '' }) => {
     success: 'bg-[var(--accent-green-dim)] text-[var(--accent-green)] border border-[rgba(16,185,129,0.4)]',
     warning: 'bg-[var(--accent-amber-dim)] text-[var(--accent-amber)] border border-[rgba(245,158,11,0.4)]',
     danger: 'bg-[var(--accent-red-dim)] text-[var(--accent-red)] border border-[rgba(239,68,68,0.4)]',
-    purple: 'bg-[var(--accent-purple-dim)] text-[var(--accent-purple)] border border-[rgba(139,92,246,0.4)]'
+    purple: 'bg-[var(--accent-purple-dim)] text-[var(--accent-purple)] border border-[rgba(139,92,246,0.4)]',
+    blue: 'bg-blue-500/15 text-blue-300 border border-blue-500/40'
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${variants[variant]} ${className}`}>

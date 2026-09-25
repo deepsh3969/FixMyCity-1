@@ -3,11 +3,11 @@ export function getStatusMarkerColor(status) {
     REPORTED: '#a855f7',
     ASSIGNED: '#6366f1',
     UNDER_REPAIR: '#3b82f6',
-    VERIFICATION: '#14b8a6',
+    VERIFICATION: '#f59e0b',
     VERIFIED: '#10b981',
     MANUAL_REVIEW: '#f59e0b',
     REJECTED: '#ef4444',
-    RESOLVED: '#64748b'
+    RESOLVED: '#10b981'
   }
   return colors[status] || '#a855f7'
 }

@@ -53,14 +53,14 @@ export function getSeverityLabel(severity) {
 
 export function getStatusColor(status) {
   const colors = {
-    REPORTED: 'text-cyan-300 bg-cyan-500/15 border border-cyan-500/40',
+    REPORTED: 'text-purple-300 bg-purple-500/15 border border-purple-500/40',
     ASSIGNED: 'text-indigo-300 bg-indigo-500/15 border border-indigo-500/40',
     UNDER_REPAIR: 'text-blue-300 bg-blue-500/15 border border-blue-500/40',
-    VERIFICATION: 'text-cyan-300 bg-cyan-500/15 border border-cyan-500/40',
+    VERIFICATION: 'text-amber-300 bg-amber-500/15 border border-amber-500/40',
     VERIFIED: 'text-emerald-300 bg-emerald-500/15 border border-emerald-500/40',
     MANUAL_REVIEW: 'text-amber-300 bg-amber-500/15 border border-amber-500/40',
     REJECTED: 'text-red-300 bg-red-500/15 border border-red-500/40',
-    RESOLVED: 'text-slate-300 bg-slate-500/15 border border-slate-500/40'
+    RESOLVED: 'text-emerald-300 bg-emerald-500/15 border border-emerald-500/40'
   }
   return colors[status] || colors.REPORTED
 }
@@ -71,10 +71,10 @@ export const IMAGE_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
 
 export function getBadgeVariant(status) {
   if (status === 'VERIFIED' || status === 'RESOLVED') return 'success'
-  if (status === 'MANUAL_REVIEW' || status === 'UNDER_REPAIR') return 'warning'
+  if (status === 'MANUAL_REVIEW' || status === 'VERIFICATION') return 'warning'
   if (status === 'REJECTED') return 'danger'
-  if (status === 'ASSIGNED') return 'purple'
-  if (status === 'VERIFICATION') return 'primary'
+  if (status === 'REPORTED') return 'purple'
+  if (status === 'ASSIGNED' || status === 'UNDER_REPAIR') return 'blue'
   return 'primary'
 }
 

@@ -13,14 +13,14 @@ export default function AnalyticsPanel({ stats, complaints = [], compact = false
   const [mode, setMode] = useState('status')
 
   const TONE_HEX = {
-    REPORTED: '#22D3EE',
-    ASSIGNED: '#8B5CF6',
+    REPORTED: '#A855F7',
+    ASSIGNED: '#6366F1',
     UNDER_REPAIR: '#3B82F6',
-    VERIFICATION: '#06B6D4',
+    VERIFICATION: '#F59E0B',
     VERIFIED: '#10B981',
     MANUAL_REVIEW: '#F59E0B',
     REJECTED: '#EF4444',
-    RESOLVED: '#34D399',
+    RESOLVED: '#10B981',
     low: '#10B981',
     medium: '#06b6d4',
     high: '#f59e0b',

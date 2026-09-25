@@ -73,8 +73,8 @@ export default function VerificationPanel({ result, complaintId, isDemo = false,
               <DecisionIcon className="w-6 h-6" style={{ color: decisionStyle.color }} />
             </div>
             <div>
-              <p className="tech-label text-[var(--accent-cyan)] mb-1">Proof of Repair</p>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)]">AI Verification</h3>
+              <p className="tech-label text-[var(--accent-cyan)] mb-1">AI Verification</p>
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">Proof of Repair</h3>
               <p className="text-xs text-[var(--text-muted)] font-mono">BEFORE VS AFTER · {complaintId}</p>
             </div>
           </div>

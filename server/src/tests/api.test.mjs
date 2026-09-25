@@ -16,7 +16,7 @@ const { isGeminiConfigured } = await import('../services/gemini.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const POTH_IMAGE = path.join(__dirname, '../../../POTH1.jpg');
-const NOPOTH_IMAGE = path.join(__dirname, '../../../NOPOTH4.png');
+const NOPOTH_IMAGE = path.join(__dirname, '../../../client/public/logo.png');
 const TINY_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
   'base64'
@@ -266,11 +266,11 @@ test('validate-image LIVE: POTH1 detected as pothole', { skip: !isGeminiConfigur
   assert.ok(res.body.description && res.body.description.length > 10);
 });
 
-test('validate-image LIVE: NOPOTH4 rejected as non-pothole', { skip: !isGeminiConfigured() }, async () => {
+test('validate-image LIVE: non-road image rejected as non-pothole', { skip: !isGeminiConfigured() }, async () => {
   await new Promise((r) => setTimeout(r, 60000));
   const res = await request(app)
     .post('/api/ai/validate-image')
-    .attach('image', NOPOTH_IMAGE, { filename: 'NOPOTH4.png', contentType: 'image/png' });
+    .attach('image', NOPOTH_IMAGE, { filename: 'logo.png', contentType: 'image/png' });
   assert.equal(res.status, 200, JSON.stringify(res.body));
   assert.equal(res.body.isPothole, false);
   assert.equal(res.body.status, 'NO_POTHOLE');

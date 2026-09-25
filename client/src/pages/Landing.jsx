@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Shield, MapPin, Hammer, CheckCircle, ArrowRight, Zap, Eye, Target, Layers, TrendingUp, AlertTriangle, Camera } from 'lucide-react'
+import { Shield, MapPin, Hammer, CheckCircle, ArrowRight, Zap, Eye, Target, Layers, TrendingUp, AlertTriangle, Camera, Users, Building2, HardHat, Landmark } from 'lucide-react'
 import { Button } from '../components/UI'
 import BrandLogo from '../components/BrandLogo'
 
@@ -345,6 +345,54 @@ export default function Landing() {
                   </div>
                 </div>
                 <p className="text-slate-500">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Ecosystem / Impact */}
+      <section className="py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">One Platform, Four Perspectives</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto">From citizen-reported potholes to a continuously improving city</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: Users, label: 'Citizen', flow: ['Report', 'Track', 'Verify'], accent: 'cyan', description: 'Report damage in seconds and follow every step until the fix is AI-verified.' },
+              { icon: Building2, label: 'Municipality', flow: ['Monitor', 'Assign', 'Audit'], accent: 'purple', description: 'Command-center visibility over every complaint, contractor, and score.' },
+              { icon: HardHat, label: 'Contractor', flow: ['Repair', 'Submit Evidence', 'Verify'], accent: 'amber', description: 'Get dispatched with full context and prove repairs with real evidence.' },
+              { icon: Landmark, label: 'City', flow: ['Detect', 'Maintain', 'Improve'], accent: 'green', description: 'Turn verified repairs into analytics for smarter road maintenance.' }
+            ].map((item) => (
+              <div key={item.label} className="glass hover-lift p-6 relative overflow-hidden group">
+                <div className={`absolute -top-14 -right-14 w-36 h-36 rounded-full blur-3xl opacity-15 group-hover:opacity-30 transition-opacity ${
+                  item.accent === 'cyan' ? 'bg-cyan-400' : item.accent === 'purple' ? 'bg-purple-500' : item.accent === 'amber' ? 'bg-amber-400' : 'bg-emerald-400'
+                }`} />
+                <div className="relative">
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center border mb-4 ${
+                    item.accent === 'cyan'
+                      ? 'bg-[var(--accent-cyan-dim)] border-[rgba(34,211,238,0.4)] text-[var(--accent-cyan)]'
+                      : item.accent === 'purple'
+                        ? 'bg-[var(--accent-purple-dim)] border-[rgba(139,92,246,0.4)] text-[var(--accent-purple)]'
+                        : item.accent === 'amber'
+                          ? 'bg-[var(--accent-amber-dim)] border-[rgba(245,158,11,0.4)] text-[var(--accent-amber)]'
+                          : 'bg-[var(--accent-green-dim)] border-[rgba(16,185,129,0.4)] text-[var(--accent-green)]'
+                  }`}>
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2 uppercase tracking-wide">{item.label}</h3>
+                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                    {item.flow.map((step, i) => (
+                      <span key={step} className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--accent-cyan)]">
+                        {i > 0 && <span className="text-[var(--text-muted)]">→</span>}
+                        {step}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{item.description}</p>
+                </div>
               </div>
             ))}
           </div>
